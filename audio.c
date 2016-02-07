@@ -49,13 +49,13 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 	struct audio_data* data = userdata;
 
 	for(size_t i = 0; i < l; ++i) {
-		int contrib = 0;
+		float contrib = 0;
 
 		float towrite = 0;
 
 		for(size_t sidx = 0; sidx < CONCURRENT_SAMPLES; ++sidx) {
 			if (data->samples[sidx].remaining > i) {
-				contrib++;
+				contrib += data->samples[sidx].volume;
 
 				towrite += sample(data->spec.freq,
 				                  &data->samples[sidx],
@@ -64,7 +64,7 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 		}
 
 		if (contrib > 0)
-			towrite /= (float)contrib;
+			towrite /= contrib;
 
 
 		if (towrite > 1) towrite = 1;
