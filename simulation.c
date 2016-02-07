@@ -10,7 +10,7 @@
                                                        || y1 + h1 < y2 \
                                                        || y2 + h2 < y1)
 
-void step_simulation(struct scene* s)
+int step_simulation(struct scene* s)
 {
 	s->b.x += s->b.dx;
 	s->b.y += s->b.dy;
@@ -99,13 +99,12 @@ void step_simulation(struct scene* s)
 	}
 
 	if (s->p1pt >= WINSTATE && s->p2pt >= WINSTATE) {
-		printf("It's a tie!");
-		exit(0);
+		return 0;
 	} else if (s->p1pt >= WINSTATE) {
-		printf("Player 1 won!");
-		exit(0);
-	} else if (s->p1pt >= WINSTATE) {
-		printf("Player 2 won!");
-		exit(0);
+		return 1;
+	} else if (s->p2pt >= WINSTATE) {
+		return 2;
 	}
+
+	return -1;
 }

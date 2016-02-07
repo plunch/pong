@@ -33,6 +33,6 @@ struct scene {
 	struct paddle p1, p2;
 };
 
-void step_simulation(struct scene*);
+int step_simulation(struct scene*);
 
 #endif /* SIM_H */

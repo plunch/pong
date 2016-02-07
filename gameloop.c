@@ -6,7 +6,8 @@
 #include "simulation.h"
 #include "render.h"
 
-#include "audio.h"
+#include "audioproxy.h"
+#include "menus/winmenu.h"
 
 #include <stdbool.h>
 
@@ -73,7 +74,16 @@ enum menu_result main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 					break;
 			}
 
-			step_simulation(s);
+			int winner = step_simulation(s);
+			if (winner >= 0) {
+				struct menu men;
+				if (!create_winmenu(&men, winner)) {
+					perror("Create win menu");
+					return MNU_QUIT;
+				}
+				run_menu(r, &men);
+				return MNU_BACK;
+			}
 
 			next_tick += SKIP_TICKS;
 			loops++;
