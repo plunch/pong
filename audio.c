@@ -59,7 +59,7 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 
 				towrite += sample(data->spec.freq,
 				                  &data->samples[sidx],
-				                  data->sample + i);
+				                  data->sample + i) * data->samples[sidx].volume;
 			}
 		}
 
