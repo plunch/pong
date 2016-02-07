@@ -1,11 +1,105 @@
 #include "render.h"
 
+#include <stdio.h>
+#include <string.h>
+
+#include "numbers.h"
+
+#define NUMPXSIZE 10
+
 static int rintit(real v)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wbad-function-cast"
 	return (int)rint(v);
 #pragma GCC diagnostic pop
+}
+
+static void print_scorechar(SDL_Renderer* rend, char c, int x, int y)
+{
+	SDL_Rect re;
+	re.x = x;
+	re.y = y;
+	re.w = NUMPXSIZE;
+	re.h = NUMPXSIZE;
+
+	const char (*num)[5][3];
+
+	switch(c) {
+		case '0':
+			num = &num0;
+			break;
+		case '1':
+			num = &num1;
+			break;
+		case '2':
+			num = &num2;
+			break;
+		case '3':
+			num = &num3;
+			break;
+		case '4':
+			num = &num4;
+			break;
+		case '5':
+			num = &num5;
+			break;
+		case '6':
+			num = &num6;
+			break;
+		case '7':
+			num = &num7;
+			break;
+		case '8':
+			num = &num8;
+			break;
+		case '9':
+			num = &num9;
+			break;
+		default:
+			return;
+	}
+
+	for(int col = 0; col < 3; ++col) {
+		for(int row = 0; row < 5; ++row) {
+			if ((*num)[row][col]) {
+				SDL_RenderFillRect(rend, &re);
+			}
+			re.y += NUMPXSIZE;
+		}
+		re.x += NUMPXSIZE;
+		re.y -= NUMPXSIZE * 5;
+	}
+}
+
+static void print_score(SDL_Renderer* re, SDL_Rect* r,
+                        unsigned int pt, int left)
+{
+	char strpt[5] = {'\0'};
+	snprintf(strpt, 5, "%u", pt);
+
+	size_t l = strlen(strpt);
+	if (!l) return;
+
+	if (left) {
+		int x, y;
+		x = r->x;
+		y = r->y;
+
+		for(size_t i = 0; i < l; ++i) {
+			print_scorechar(re, strpt[i], x, y);
+			x += NUMPXSIZE * 4;
+		}
+	} else {
+		int x, y;
+		x = r->x + r->w - NUMPXSIZE * 3;
+		y = r->y;
+
+		for(size_t i = l; i >= 1; --i) {
+			print_scorechar(re, strpt[i-1], x, y);
+			x -= NUMPXSIZE * 4;
+		}
+	}
 }
 
 void draw_scene(struct scene* s, SDL_Renderer* re)
@@ -62,18 +156,11 @@ void draw_scene(struct scene* s, SDL_Renderer* re)
 
 	r.x = 30;
 	r.y = 30;
-	r.w = 20;
-	r.h = 70;
-	for (unsigned int i = 0; i < s->p1pt; ++i) {
-		SDL_RenderFillRect(re, &r);
+	r.w = rintit(s->w / 2.0 - 60);
+	r.h = NUMPXSIZE * 5;
 
-		r.x += 50;
-	}
+	print_score(re, &r, s->p1pt, 0);
 
-	r.x = rintit(s->w) - 30 - 20;
-	for(unsigned int i = 0; i < s->p2pt; ++i) {
-		SDL_RenderFillRect(re, &r);
-
-		r.x -= 50;
-	}
+	r.x = rintit(s->w / 2.0 + 30.0);
+	print_score(re, &r, s->p2pt, 1);
 }
