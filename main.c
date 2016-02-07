@@ -108,7 +108,8 @@ mainmenu:
 					error("Allocate options menu");
 					break;
 				}
-				run_menu(r, &opt);
+				if(run_menu(r, &opt) == MNU_QUIT)
+					break;
 			}
 		default:
 			goto mainmenu;
