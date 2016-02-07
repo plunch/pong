@@ -3,6 +3,9 @@
 
 void proxy_init(void*);
 
+void proxy_setvolume(float);
+float proxy_getvolume();
+
 void play_paddle_hit();
 void play_player_point();
 

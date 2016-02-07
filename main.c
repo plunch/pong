@@ -7,6 +7,7 @@
 #include "audioproxy.h"
 
 #include "menus/mainmenu.h"
+#include "menus/options.h"
 
 #include <SDL2/SDL.h>
 
@@ -100,7 +101,15 @@ mainmenu:
 		case MNU_BACK:
 			break;
 		case MNU_OPT1:
-			// TODO: Options menu
+			{
+				struct menu opt;
+				if (!create_optionsmenu(&opt)) {
+					// Abort
+					error("Allocate options menu");
+					break;
+				}
+				run_menu(r, &opt);
+			}
 		default:
 			goto mainmenu;
 	}
