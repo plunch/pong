@@ -63,7 +63,7 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 			}
 		}
 
-		if (contrib > 0)
+		if (contrib > 1)
 			towrite /= contrib;
 
 
