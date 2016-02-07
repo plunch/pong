@@ -5,4 +5,5 @@ pong
 bin/*
 build/*
 .release_time
+.debug_time
 .directory

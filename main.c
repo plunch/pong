@@ -6,6 +6,8 @@
 #include "audio.h"
 #include "audioproxy.h"
 
+#include "menus/mainmenu.h"
+
 #include <SDL2/SDL.h>
 
 int main(int argc, char* argv[])
@@ -62,6 +64,11 @@ int main(int argc, char* argv[])
 	s.p2.s = 6;
 	s.p1.d = 0;
 
+	struct menu mainmen;
+	if (!create_mainmenu(&mainmen)) {
+		die("Create main menu");
+	}
+
 
 #if DEBUG
 	/* Clear screen sky blue.
@@ -78,7 +85,22 @@ int main(int argc, char* argv[])
 
 	SDL_ShowWindow(w);
 
-	main_loop(w, r, &s);
+mainmenu:
+	switch(run_menu(r, &mainmen)) {
+		case MNU_FORWARD:
+			if (main_loop(w, r, &s) == MNU_QUIT) {
+				break;
+			}
+			goto mainmenu;
+		case MNU_QUIT:
+		case MNU_BACK:
+			break;
+		case MNU_OPT1:
+			// TODO: Options menu
+		default:
+			goto mainmenu;
+	}
+
 
 	audio_destroy(aud);
 

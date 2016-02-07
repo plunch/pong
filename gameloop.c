@@ -10,12 +10,12 @@
 
 #include <stdbool.h>
 
-static bool read_input(struct scene* s) {
+static enum menu_result read_input(struct scene* s) {
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
 		switch(e.type) {
 			case SDL_QUIT:
-				return false;
+				return MNU_QUIT;
 			case SDL_KEYDOWN:
 				switch(e.key.keysym.sym) {
 					case SDLK_w:
@@ -42,14 +42,19 @@ static bool read_input(struct scene* s) {
 					case SDLK_DOWN:
 						s->p2.d = 0;
 						break;
+					case SDLK_BACKSPACE:
+					case SDLK_KP_BACKSPACE:
+					case SDLK_ESCAPE:
+					case SDLK_CANCEL:
+						return MNU_BACK;
 				}
 				break;
 		}
 	}
-	return true;
+	return MNU_NONE;
 }
 
-void main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
+enum menu_result main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 {
 	UNUSED(w);
 	
@@ -57,9 +62,16 @@ void main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 	while(1) {
 		unsigned int loops = 0;
 		while(SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
-			if (!read_input(s)) {
-				return;
+			switch (read_input(s)) {
+				// TODO: Show 'are you sure?'
+				case MNU_QUIT:
+					return MNU_QUIT;
+				case MNU_BACK:
+					return MNU_BACK;
+				default:
+					break;
 			}
+
 			step_simulation(s);
 
 			next_tick += SKIP_TICKS;
@@ -72,4 +84,6 @@ void main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 
 		SDL_RenderPresent(r);
 	}
+
+	return MNU_BACK;
 }
