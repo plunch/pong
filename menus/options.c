@@ -5,6 +5,8 @@
 
 #include "../audioproxy.h"
 
+#define VOLINC 0.05f
+
 enum options_option {
 	OPT_VOLUME,
 	OPT_SAVE,
@@ -57,7 +59,7 @@ static enum menu_result optionsmenu_action(void* userdata, enum action action)
 		case ACT_LEFT:
 			if (s->selected == OPT_VOLUME) {
 				float f = proxy_getvolume();
-				f -= 0.1f;
+				f -= VOLINC;
 				if (f > 1.0f) f = 1.0f;
 				proxy_setvolume(f);
 				play_menu_move();
@@ -66,7 +68,7 @@ static enum menu_result optionsmenu_action(void* userdata, enum action action)
 		case ACT_RIGHT:
 			if (s->selected == OPT_VOLUME) {
 				float f = proxy_getvolume();
-				f += 0.1f;
+				f += VOLINC;
 				if (f < 0.0f) f = 0.0f;
 				proxy_setvolume(f);
 				play_menu_move();
