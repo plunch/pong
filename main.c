@@ -10,6 +10,36 @@
 
 #include <SDL2/SDL.h>
 
+static enum menu_result game(SDL_Window* w, SDL_Renderer* r)
+{
+	struct scene s;
+	
+	s.w = 1200;
+	s.h = 800;
+	s.p1pt = 0;
+	s.p2pt = 0;
+
+	s.bs = 2;
+	s.b.x = 600;
+	s.b.y = 400;
+	s.b.dx = -2;
+	s.b.dy = 0;
+
+	s.p1.x = 50;
+	s.p1.y = 300 - 100;
+	s.p1.width = 200;
+	s.p1.s = 6;
+	s.p1.d = 0;
+
+	s.p2.x = 1200 - 50 - PADDLETHICKNESS;
+	s.p2.y = 300;
+	s.p2.width = 200;
+	s.p2.s = 6;
+	s.p1.d = 0;
+
+	return main_loop(w, r, &s);
+}
+
 int main(int argc, char* argv[])
 {
 	UNUSED(argc);
@@ -39,31 +69,6 @@ int main(int argc, char* argv[])
 
 	proxy_init(aud);
 
-	struct scene s;
-	
-	s.w = 1200;
-	s.h = 800;
-	s.p1pt = 0;
-	s.p2pt = 0;
-
-	s.bs = 2;
-	s.b.x = 600;
-	s.b.y = 400;
-	s.b.dx = -2;
-	s.b.dy = 0;
-
-	s.p1.x = 50;
-	s.p1.y = 300 - 100;
-	s.p1.width = 200;
-	s.p1.s = 6;
-	s.p1.d = 0;
-
-	s.p2.x = 1200 - 50 - PADDLETHICKNESS;
-	s.p2.y = 300;
-	s.p2.width = 200;
-	s.p2.s = 6;
-	s.p1.d = 0;
-
 	struct menu mainmen;
 	if (!create_mainmenu(&mainmen)) {
 		die("Create main menu");
@@ -88,9 +93,8 @@ int main(int argc, char* argv[])
 mainmenu:
 	switch(run_menu(r, &mainmen)) {
 		case MNU_FORWARD:
-			if (main_loop(w, r, &s) == MNU_QUIT) {
+			if (game(w, r) == MNU_QUIT)
 				break;
-			}
 			goto mainmenu;
 		case MNU_QUIT:
 		case MNU_BACK:
