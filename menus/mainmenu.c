@@ -1,5 +1,7 @@
 #include "mainmenu.h"
 
+#include "../audioproxy.h"
+
 #include <stdlib.h>
 
 enum mainmenu_option {
@@ -85,11 +87,13 @@ static enum menu_result mainmenu_action(void* userdata, enum action action)
 		case ACT_UP:
 			if (m->selected != MAINM_PLAY) {
 				m->selected--;
+				play_menu_move();
 			}
 			return MNU_NONE;
 		case ACT_DOWN:
 			if (m->selected != MAINM_QUIT) {
 				m->selected++;
+				play_menu_move();
 			}
 			return MNU_NONE;
 		case ACT_BACK:
@@ -97,10 +101,13 @@ static enum menu_result mainmenu_action(void* userdata, enum action action)
 		case ACT_CONFIRM:
 			switch (m->selected) {
 				case MAINM_PLAY:
+					play_menu_confirm();
 					return MNU_FORWARD;
 				case MAINM_QUIT:
+					play_menu_confirm();
 					return MNU_QUIT;
 				case MAINM_OPTIONS:
+					play_menu_confirm();
 					return MNU_OPT1;
 			}
 		default:

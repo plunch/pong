@@ -67,6 +67,7 @@ enum menu_result main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 				case MNU_QUIT:
 					return MNU_QUIT;
 				case MNU_BACK:
+					play_menu_back();
 					return MNU_BACK;
 				default:
 					break;
