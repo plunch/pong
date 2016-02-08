@@ -95,6 +95,4 @@ enum menu_result main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 
 		SDL_RenderPresent(r);
 	}
-
-	return MNU_BACK;
 }

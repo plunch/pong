@@ -25,7 +25,7 @@ enum wavetype {
 // Opaque struct for thead safety
 struct audio_data;
 
-struct audio_data* audio_init();
+struct audio_data* audio_init(void);
 
 void audio_destroy(struct audio_data*);
 

@@ -2,7 +2,7 @@
 # The name of the executable to be created
 BIN_NAME := pong
 # Compiler used
-CXX := gcc
+CXX := clang
 # Extension of source files used in the project
 SRC_EXT = c
 # Path to the source directory, relative to the makefile
@@ -37,8 +37,9 @@ GCC_FLAGS = -std=c99 \
 	    -Wunused
 CLANG_FLAGS = -std=c99\
 	      -Weverything \
-	      -Wno-padded
-COMPILE_FLAGS = $(GCC_FLAGS)
+	      -Wno-padded \
+	      -Wno-switch-enum
+COMPILE_FLAGS = $(CLANG_FLAGS)
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG -Ofast
 # Additional debug-specific flags

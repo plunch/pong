@@ -1,4 +1,5 @@
 #include "audio.h"
+#include "audioproxy.h"
 
 static struct audio_data* data;
 static float proxy_volume = 1.0;
