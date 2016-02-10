@@ -37,11 +37,11 @@ static int draw_option(SDL_Renderer* re,
 	
 	if (m->selected == opt) {
 		SDL_RenderFillRect(re, &r);
+
 		SDL_SetTextureColorMod(ti->b, 0, 0, 0);
 		render_text(re, ti, r, text);
 		SDL_SetTextureColorMod(ti->b, 255, 255, 255);
 	} else {
-		SDL_RenderDrawRect(re, &r);
 		render_text(re, ti, r, text);
 	}
 
