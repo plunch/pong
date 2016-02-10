@@ -38,7 +38,7 @@ static enum menu_result game(SDL_Window* w, SDL_Renderer* r)
 	s.p2.y = 300;
 	s.p2.width = 200;
 	s.p2.s = 6;
-	s.p1.d = 0;
+	s.p2.d = 0;
 
 	return main_loop(w, r, &s);
 }
