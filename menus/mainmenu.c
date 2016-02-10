@@ -121,6 +121,11 @@ static enum menu_result mainmenu_action(void* userdata, enum action action)
 	}
 }
 
+void destroy_mainmenu(struct menu* m)
+{
+	if (m->userdata != NULL) free(m->userdata);
+}
+
 int create_mainmenu(struct menu* m)
 {
 	if (m == NULL) 
@@ -135,6 +140,5 @@ int create_mainmenu(struct menu* m)
 	m->userdata = state;
 	m->paint = &mainmenu_paint;
 	m->action = &mainmenu_action;
-
 	return 1;
 }

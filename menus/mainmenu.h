@@ -5,4 +5,6 @@
 
 int create_mainmenu(struct menu*);
 
+void destroy_mainmenu(struct menu*);
+
 #endif /* MAINM_H */

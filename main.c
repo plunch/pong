@@ -118,13 +118,18 @@ mainmenu:
 					break;
 				}
 				opt.text = &asciifont;
-				if(run_menu(r, &opt) == MNU_QUIT)
+
+				enum menu_result optres = run_menu(r, &opt);
+				destroy_optionsmenu(&opt);
+				if (optres == MNU_QUIT)
 					break;
 			}
 		default:
 			goto mainmenu;
 	}
 
+
+	destroy_mainmenu(&mainmen);
 
 	audio_destroy(aud);
 

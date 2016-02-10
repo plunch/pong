@@ -82,6 +82,7 @@ enum menu_result main_loop(SDL_Window* w, SDL_Renderer* r, struct scene* s)
 					return MNU_QUIT;
 				}
 				run_menu(r, &men);
+				destroy_winmenu(&men);
 				return MNU_BACK;
 			}
 

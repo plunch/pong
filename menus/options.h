@@ -5,4 +5,6 @@
 
 int create_optionsmenu(struct menu*);
 
+void destroy_optionsmenu(struct menu*);
+
 #endif /* OPTIONS_H */

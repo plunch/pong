@@ -87,6 +87,11 @@ static enum menu_result optionsmenu_action(void* userdata, enum action action)
 	}
 }
 
+void destroy_optionsmenu(struct menu* m)
+{
+	if (m->userdata != NULL) free(m->userdata);
+}
+
 int create_optionsmenu(struct menu* m)
 {
 	struct optionsmenu_state* state = malloc(sizeof(struct optionsmenu_state));
@@ -94,6 +99,7 @@ int create_optionsmenu(struct menu* m)
 		return 0;
 
 	state->orig_volume = proxy_getvolume();
+	state->selected = OPT_VOLUME;
 
 	m->userdata = state;
 	m->paint = &optionsmenu_paint;

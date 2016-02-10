@@ -126,6 +126,7 @@ struct audio_data* audio_init()
 	struct audio_data* data = malloc(sizeof(struct audio_data));
 	if (data == NULL)
 		return NULL;
+	data->sample = 0;
 
 	SDL_AudioSpec want;
 

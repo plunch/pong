@@ -44,6 +44,11 @@ static enum menu_result winmenu_action(void* userdata, enum action action)
 		return MNU_NONE;
 }
 
+void destroy_winmenu(struct menu* m)
+{
+	if (m->userdata != NULL) free(m->userdata);
+}
+
 int create_winmenu(struct menu* m, int winner)
 {
 	struct winmenu_state* state = malloc(sizeof(struct winmenu_state));

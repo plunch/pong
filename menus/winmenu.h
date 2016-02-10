@@ -5,4 +5,6 @@
 
 int create_winmenu(struct menu*, int winner);
 
+void destroy_winmenu(struct menu*);
+
 #endif /* WIN_H */
