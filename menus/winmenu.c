@@ -6,7 +6,7 @@ struct winmenu_state {
 	int winner;
 };
 
-static void winmenu_paint(void* userdata, SDL_Renderer* re)
+static void winmenu_paint(void* userdata, SDL_Renderer* re, struct textinfo* ti)
 {
 	struct winmenu_state* s = userdata;
 

@@ -9,6 +9,8 @@
 #include "menus/mainmenu.h"
 #include "menus/options.h"
 
+#include "content/asciifont.h"
+
 #include <SDL2/SDL.h>
 
 static enum menu_result game(SDL_Window* w, SDL_Renderer* r)
@@ -59,7 +61,7 @@ int main(int argc, char* argv[])
 	if (w == NULL) {
 		die_sdl("Create window");
 	}
-	SDL_Renderer* r = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer* r = SDL_CreateRenderer(w, -1, 0);
 	if (r == NULL) {
 		die_sdl("Create rendering context");
 	}
@@ -70,10 +72,17 @@ int main(int argc, char* argv[])
 
 	proxy_init(aud);
 
+	struct textinfo asciifont;
+	if (!load_content_ascii(&asciifont, r)){
+		die("Load font texture");
+	}
+
 	struct menu mainmen;
 	if (!create_mainmenu(&mainmen)) {
 		die("Create main menu");
 	}
+
+	mainmen.text = &asciifont;
 
 
 #if DEBUG
@@ -108,6 +117,7 @@ mainmenu:
 					error("Allocate options menu");
 					break;
 				}
+				opt.text = &asciifont;
 				if(run_menu(r, &opt) == MNU_QUIT)
 					break;
 			}

@@ -2,6 +2,7 @@
 #define MENUIMPL_H
 
 #include "menu.h"
+#include "text.h"
 
 enum action {
 	ACT_NONE,
@@ -15,8 +16,9 @@ enum action {
 
 struct menu {
 	void* userdata;
-	void (*paint)(void*, SDL_Renderer*);
+	void (*paint)(void*, SDL_Renderer*, struct textinfo*);
 	enum menu_result (*action)(void*, enum action);
+	struct textinfo* text;
 };
 
 #endif /* MENUIMPL_H */

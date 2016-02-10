@@ -18,7 +18,7 @@ struct optionsmenu_state {
 	enum options_option selected;
 };
 
-static void optionsmenu_paint(void* userdata, SDL_Renderer* re)
+static void optionsmenu_paint(void* userdata, SDL_Renderer* re, struct textinfo* ti)
 {
 	struct optionsmenu_state* s = userdata;
 	UNUSED(s);

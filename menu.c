@@ -58,7 +58,7 @@ enum menu_result run_menu(SDL_Renderer* r, struct menu* m)
 		SDL_SetRenderDrawColor(r, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(r);
 
-		m->paint(m->userdata, r);
+		m->paint(m->userdata, r, m->text);
 
 		SDL_RenderPresent(r);
 	}

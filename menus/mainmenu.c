@@ -20,7 +20,9 @@ static int draw_option(SDL_Renderer* re,
                        struct mainmenu_state* m,
 		       enum mainmenu_option opt,
                        int x, int y,
-                       int w, int h)
+                       int w, int h,
+		       struct textinfo* ti,
+		       const char* text)
 {
 	if (h > 50)
 		h = 50;
@@ -35,14 +37,18 @@ static int draw_option(SDL_Renderer* re,
 	
 	if (m->selected == opt) {
 		SDL_RenderFillRect(re, &r);
+		SDL_SetTextureColorMod(ti->b, 0, 0, 0);
+		render_text(re, ti, r, text);
+		SDL_SetTextureColorMod(ti->b, 255, 255, 255);
 	} else {
 		SDL_RenderDrawRect(re, &r);
+		render_text(re, ti, r, text);
 	}
 
 	return h;
 }
 
-static void mainmenu_paint(void* userdata, SDL_Renderer* r)
+static void mainmenu_paint(void* userdata, SDL_Renderer* r, struct textinfo* ti)
 {
 	struct mainmenu_state* m = userdata;
 
@@ -74,9 +80,9 @@ static void mainmenu_paint(void* userdata, SDL_Renderer* r)
 	
 	int opty = y + logoh;
 	// Draw x
-	opty += draw_option(r, m, MAINM_PLAY, x, opty, w, h);
-	opty += draw_option(r, m, MAINM_OPTIONS, x, opty, w, h);
-	opty += draw_option(r, m, MAINM_QUIT, x, opty, w, h);
+	opty += draw_option(r, m, MAINM_PLAY, x, opty, w, h, ti, "PLAY");
+	opty += draw_option(r, m, MAINM_OPTIONS, x, opty, w, h, ti, "OPTIONS");
+	opty += draw_option(r, m, MAINM_QUIT, x, opty, w, h, ti, "QUIT");
 }
 
 static enum menu_result mainmenu_action(void* userdata, enum action action)
