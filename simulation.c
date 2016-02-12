@@ -33,6 +33,9 @@ int step_simulation(struct scene* s)
 		// P1 has the ball
 		s->b.dx = -s->b.dx * BOUNCESPEEDSCALE;
 
+		// Set ball to the suface X to prevent collision wonkyness
+		s->b.x = s->p1.x + PADDLETHICKNESS;
+
 		// Normalized Y on paddle
 		real py = s->p1.y + s->p1.width / 2;
 		real by = s->b.y + BALLSIZE/2;
@@ -53,6 +56,9 @@ int step_simulation(struct scene* s)
 	                    s->p2.x, s->p2.y, PADDLETHICKNESS, s->p2.width)) {
 		// P2 has the ball
 		s->b.dx = -s->b.dx * BOUNCESPEEDSCALE;
+		
+		// Set ball to the suface X to prevent collision wonkyness
+		s->b.x = s->p2.x - BALLSIZE;
 		
 		// Normalized Y on paddle
 		real py = s->p2.y + s->p2.width / 2;
