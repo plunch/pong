@@ -6,6 +6,9 @@
 #include "audio.h"
 #include "audioproxy.h"
 
+#include "inputsource_sdl.h"
+#include "input/keyboard.h"
+
 #include "menus/mainmenu.h"
 #include "menus/options.h"
 
@@ -13,7 +16,7 @@
 
 #include <SDL2/SDL.h>
 
-static enum menu_result game(SDL_Window* w, SDL_Renderer* r)
+static enum menu_result game(SDL_Window* w, SDL_Renderer* r, struct inputsourcelist* sources)
 {
 	struct scene s;
 	
@@ -40,7 +43,7 @@ static enum menu_result game(SDL_Window* w, SDL_Renderer* r)
 	s.p2.s = 6;
 	s.p2.d = 0;
 
-	return main_loop(w, r, &s);
+	return main_loop(w, r, &s, sources);
 }
 
 int main(int argc, char* argv[])
@@ -84,6 +87,22 @@ int main(int argc, char* argv[])
 
 	mainmen.text = &asciifont;
 
+	struct keyboard_mapping_entry keymap[] = {
+		{SDLK_w, GA_P1_UP},
+		{SDLK_s, GA_P1_DOWN},
+		{SDLK_UP, GA_P2_UP},
+		{SDLK_DOWN, GA_P2_DOWN},
+	};
+
+	struct keyboard_mapping kconf = { keymap, ARRAYLEN(keymap) };
+
+	struct inputsource_sdl kinput;
+	kbinput_make_inputsource(&kinput, &kconf);
+
+	// TODO: Allocate space on heap for input sources
+	// to be able too dynamically add and remove inputs
+	struct inputsourcelist inplist = { &kinput, 1 };
+
 
 #if DEBUG
 	/* Clear screen sky blue.
@@ -103,7 +122,7 @@ int main(int argc, char* argv[])
 mainmenu:
 	switch(run_menu(r, &mainmen)) {
 		case MNU_FORWARD:
-			if (game(w, r) == MNU_QUIT)
+			if (game(w, r, &inplist) == MNU_QUIT)
 				break;
 			goto mainmenu;
 		case MNU_QUIT:
