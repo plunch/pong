@@ -16,7 +16,7 @@
 
 #include <SDL2/SDL.h>
 
-static enum menu_result game(SDL_Window* w, SDL_Renderer* r, struct inputsourcelist* sources)
+static enum menu_result game(SDL_Window* w, SDL_Renderer* r, struct inputsourcelist* sources, struct textinfo* ti)
 {
 	struct scene s;
 	
@@ -43,7 +43,7 @@ static enum menu_result game(SDL_Window* w, SDL_Renderer* r, struct inputsourcel
 	s.p2.s = 6;
 	s.p2.d = 0;
 
-	return main_loop(w, r, &s, sources);
+	return main_loop(w, r, &s, sources, ti);
 }
 
 int main(int argc, char* argv[])
@@ -69,11 +69,13 @@ int main(int argc, char* argv[])
 		die_sdl("Create rendering context");
 	}
 
+#if 0
 	struct audio_data* aud = audio_init();
 	if (aud == NULL)
 		die("Initialize audio");
 
 	proxy_init(aud);
+#endif
 
 	struct textinfo asciifont;
 	if (!load_content_ascii(&asciifont, r)){
@@ -81,11 +83,9 @@ int main(int argc, char* argv[])
 	}
 
 	struct menu mainmen;
-	if (!create_mainmenu(&mainmen)) {
+	if (!(create_menu(&mainmen, &asciifont) && create_mainmenu(&mainmen))) {
 		die("Create main menu");
 	}
-
-	mainmen.text = &asciifont;
 
 	struct keyboard_mapping_entry keymap[] = {
 		{SDLK_w, GA_P1_UP},
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 mainmenu:
 	switch(run_menu(r, &mainmen)) {
 		case MNU_FORWARD:
-			if (game(w, r, &inplist) == MNU_QUIT)
+			if (game(w, r, &inplist, &asciifont) == MNU_QUIT)
 				break;
 			goto mainmenu;
 		case MNU_QUIT:
@@ -131,7 +131,7 @@ mainmenu:
 		case MNU_OPT1:
 			{
 				struct menu opt;
-				if (!create_optionsmenu(&opt)) {
+				if (!(create_menu(&opt, &asciifont) && create_optionsmenu(&opt))) {
 					// Abort
 					error("Allocate options menu");
 					break;
@@ -150,7 +150,9 @@ mainmenu:
 
 	destroy_mainmenu(&mainmen);
 
+#if 0
 	audio_destroy(aud);
+#endif
 
 	SDL_DestroyRenderer(r);
 	SDL_DestroyWindow(w);

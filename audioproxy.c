@@ -21,28 +21,33 @@ float proxy_getvolume()
 
 void play_paddle_hit()
 {
+	if (!data) return;
 	audio_play(data, WAVE_TRIANGLE, 250, 220, 0.75f * proxy_volume);
 }
 
 void play_player_point()
 {
+	if (!data) return;
 	audio_play(data, WAVE_SAWTOOTH, 500, 440, 0.75f * proxy_volume);
 	audio_play(data, WAVE_SQUARE, 500, 110, 0.75f * proxy_volume);
 }
 
 void play_menu_move()
 {
+	if (!data) return;
 	audio_play(data, WAVE_SAWTOOTH, 120, 220, 0.25f * proxy_volume);
 }
 
 void play_menu_back()
 {
+	if (!data) return;
 	audio_play(data, WAVE_SAWTOOTH, 500, 220, 0.25f * proxy_volume);
 	audio_play(data, WAVE_SQUARE, 250, 330, 0.5f * proxy_volume);
 }
 
 void play_menu_confirm()
 {
+	if (!data) return;
 	audio_play(data, WAVE_SAWTOOTH, 500, 220, 0.25f * proxy_volume);
 	audio_play(data, WAVE_SQUARE, 250, 110, 0.5f * proxy_volume);
 }

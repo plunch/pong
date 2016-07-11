@@ -12,6 +12,6 @@
 #define SKIP_TICKS (1000 / 60)
 #define MAX_FRAMESKIP 1
 
-enum menu_result main_loop(SDL_Window*, SDL_Renderer*, struct scene*, struct inputsourcelist*);
+enum menu_result main_loop(SDL_Window*, SDL_Renderer*, struct scene*, struct inputsourcelist*, struct textinfo*);
 
 #endif /* GLOOP_H */

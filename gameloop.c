@@ -12,6 +12,7 @@
 
 #include "audioproxy.h"
 #include "menus/winmenu.h"
+#include "menus/quitmenu.h"
 
 #include <stdbool.h>
 
@@ -91,10 +92,12 @@ static enum menu_result read_input(struct scene* s, struct input* in, struct inp
 enum menu_result main_loop(SDL_Window* w,
                            SDL_Renderer* r,
                            struct scene* s,
-                           struct inputsourcelist* config)
+                           struct inputsourcelist* config,
+                           struct textinfo* ti)
 {
 	UNUSED(w);
 
+	struct menu men;
 	struct input in;
 	
 	uint32_t next_tick = SDL_GetTicks();
@@ -104,7 +107,15 @@ enum menu_result main_loop(SDL_Window* w,
 			switch (read_input(s, &in, config)) {
 				// TODO: Show 'are you sure?'
 				case MNU_QUIT:
-					return MNU_QUIT;
+						if (!(create_menu(&men, ti) && create_quitmenu(&men))) {
+							perror("Create quit menu");
+							return MNU_QUIT;
+						}
+						enum menu_result qres = run_menu(r, &men);
+						destroy_quitmenu(&men);
+						if (qres == MNU_QUIT)
+							return MNU_QUIT;
+					break;
 				case MNU_BACK:
 					play_menu_back();
 					return MNU_BACK;
@@ -114,8 +125,7 @@ enum menu_result main_loop(SDL_Window* w,
 
 			int winner = step_simulation(s);
 			if (winner >= 0) {
-				struct menu men;
-				if (!create_winmenu(&men, winner)) {
+				if (!(create_menu(&men, ti) && create_winmenu(&men, winner))) {
 					perror("Create win menu");
 					return MNU_QUIT;
 				}

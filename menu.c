@@ -64,3 +64,9 @@ enum menu_result run_menu(SDL_Renderer* r, struct menu* m)
 	}
 	return res;
 }
+
+int create_menu(struct menu* m, struct textinfo* ti)
+{
+	m->text = ti;
+}
+
