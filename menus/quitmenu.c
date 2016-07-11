@@ -99,7 +99,7 @@ static enum menu_result quitmenu_action(void* userdata, enum action action)
 			}
 			return MNU_NONE;
 		case ACT_BACK:
-			return MNU_NONE;
+			return MNU_BACK;
 		case ACT_CONFIRM:
 			switch (m->selected) {
 				case QUITM_DONTEXIT:
