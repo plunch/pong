@@ -105,16 +105,17 @@ enum menu_result main_loop(SDL_Window* w,
 		unsigned int loops = 0;
 		while(SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
 			switch (read_input(s, &in, config)) {
-				// TODO: Show 'are you sure?'
 				case MNU_QUIT:
-						if (!(create_menu(&men, ti) && create_quitmenu(&men))) {
-							perror("Create quit menu");
-							return MNU_QUIT;
-						}
-						enum menu_result qres = run_menu(r, &men);
-						destroy_quitmenu(&men);
-						if (qres == MNU_QUIT)
-							return MNU_QUIT;
+					if (!(create_menu(&men, ti) && create_quitmenu(&men))) {
+						perror("Create quit menu");
+						return MNU_QUIT;
+					}
+					uint32_t tick_diff = SDL_GetTicks() - next_tick;
+					enum menu_result qres = run_menu(r, &men);
+					destroy_quitmenu(&men);
+					next_tick = SDL_GetTicks() - tick_diff;
+					if (qres == MNU_QUIT)
+						return MNU_QUIT;
 					break;
 				case MNU_BACK:
 					play_menu_back();
