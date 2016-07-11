@@ -9,7 +9,8 @@
 	X("paddle2", 255, 255, 255, 1) \
 	X("ball", 255, 255, 255, 1) \
 	X("field", 128, 128, 128, 0) \
-	X("volumeslider", 255, 255, 255, 1)
+	X("volumeslider", 255, 255, 255, 1) \
+	X("winstategfx", 255, 255, 255, 1) \
 
 static struct render_item* load(void* data, const char* path)
 {

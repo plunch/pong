@@ -3,6 +3,7 @@
 #include "../global.h"
 
 struct winmenu_state {
+	struct render_item* gfx;
 	int winner;
 };
 
@@ -27,7 +28,7 @@ static void winmenu_paint(void* userdata, struct renderer* re)
 			break;
 	}
 
-	ri_draw(re, NULL, x, y, w, h);
+	ri_draw(re, s->gfx, x, y, w, h);
 }
 
 static enum menu_result winmenu_action(void* userdata, enum action action)
@@ -52,6 +53,7 @@ int create_winmenu(struct menu* m, int winner)
 		return 0;
 
 	state->winner = winner;
+	state->gfx = ri_load(m->renderer, "winstategfx");
 
 	m->userdata = state;
 	m->paint = &winmenu_paint;
