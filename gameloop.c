@@ -4,7 +4,7 @@
 #include "typedefs.h"
 
 #include "simulation.h"
-#include "render.h"
+#include "scenerender.h"
 
 #include "input.h"
 #include "inputsource_sdl.h"
