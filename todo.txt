@@ -1,4 +1,6 @@
-Render text in the menus
+Render text left-aligned
+Render higlightd menu items differently
+Render text in all menus
 Fix audio output (making other audio bad)
 Mouse control in menus
 Remap buttons
