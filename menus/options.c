@@ -15,6 +15,7 @@ enum options_option {
 };
 
 struct optionsmenu_state {
+	struct render_item* slider;
 	float orig_volume;
 	enum options_option selected;
 };
@@ -34,7 +35,7 @@ static void optionsmenu_paint(void* userdata, struct renderer* re)
 	w = (int)rintf((float)w * proxy_getvolume());
 #pragma GCC diagnostic pop
 
-	ri_draw(re, NULL, x, y, w, h);
+	ri_draw(re, s->slider, x, y, w, h);
 }
 
 static enum menu_result optionsmenu_action(void* userdata, enum action action)
@@ -98,6 +99,8 @@ int create_optionsmenu(struct menu* m)
 
 	state->orig_volume = proxy_getvolume();
 	state->selected = OPT_VOLUME;
+
+	state->slider = ri_load(m->renderer, "volumeslider");
 
 	m->userdata = state;
 	m->paint = &optionsmenu_paint;
