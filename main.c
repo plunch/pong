@@ -2,6 +2,10 @@
 
 #include "gameloop.h"
 
+#include "render.h"
+#include "renderimpl.h"
+#include "sdl_renderer.h"
+
 #include "simulation.h" /* PADDLETHICKNESS */
 #include "audio.h"
 #include "audioproxy.h"
@@ -16,7 +20,7 @@
 
 #include <SDL2/SDL.h>
 
-static enum menu_result game(SDL_Window* w, SDL_Renderer* r, struct inputsourcelist* sources, struct textinfo* ti)
+static enum menu_result game(struct renderer* re, struct inputsourcelist* sources)
 {
 	struct scene s;
 	
@@ -43,7 +47,7 @@ static enum menu_result game(SDL_Window* w, SDL_Renderer* r, struct inputsourcel
 	s.p2.s = 6;
 	s.p2.d = 0;
 
-	return main_loop(w, r, &s, sources, ti);
+	return main_loop(re, &s, sources);
 }
 
 int main(int argc, char* argv[])
@@ -82,8 +86,12 @@ int main(int argc, char* argv[])
 		die("Load font texture");
 	}
 
+	struct renderer grend = RENDER_EMPTY;
+	create_sdl_renderer(&grend, w, r, &asciifont);
+
+
 	struct menu mainmen;
-	if (!(create_menu(&mainmen, &asciifont) && create_mainmenu(&mainmen))) {
+	if (!(create_menu(&mainmen, &grend) && create_mainmenu(&mainmen))) {
 		die("Create main menu");
 	}
 
@@ -120,9 +128,9 @@ int main(int argc, char* argv[])
 	SDL_ShowWindow(w);
 
 mainmenu:
-	switch(run_menu(r, &mainmen)) {
+	switch(run_menu(&mainmen)) {
 		case MNU_FORWARD:
-			if (game(w, r, &inplist, &asciifont) == MNU_QUIT)
+			if (game(&grend, &inplist) == MNU_QUIT)
 				break;
 			goto mainmenu;
 		case MNU_QUIT:
@@ -131,14 +139,13 @@ mainmenu:
 		case MNU_OPT1:
 			{
 				struct menu opt;
-				if (!(create_menu(&opt, &asciifont) && create_optionsmenu(&opt))) {
+				if (!(create_menu(&opt, &grend) && create_optionsmenu(&opt))) {
 					// Abort
 					error("Allocate options menu");
 					break;
 				}
-				opt.text = &asciifont;
 
-				enum menu_result optres = run_menu(r, &opt);
+				enum menu_result optres = run_menu(&opt);
 				destroy_optionsmenu(&opt);
 				if (optres == MNU_QUIT)
 					break;

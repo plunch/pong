@@ -1,5 +1,7 @@
 #include "mainmenu.h"
 
+#include "common.h"
+
 #include "../audioproxy.h"
 
 #include <stdlib.h>
@@ -16,44 +18,13 @@ struct mainmenu_state {
 	enum mainmenu_option selected;
 };
 
-static int draw_option(SDL_Renderer* re, 
-                       struct mainmenu_state* m,
-		       enum mainmenu_option opt,
-                       int x, int y,
-                       int w, int h,
-		       struct textinfo* ti,
-		       const char* text)
-{
-	if (h > 50)
-		h = 50;
 
-	SDL_Rect r;
-	r.x = x;
-	r.y = y;
-	r.w = w;
-	r.h = h;
-
-	SDL_SetRenderDrawColor(re, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	
-	if (m->selected == opt) {
-		SDL_RenderFillRect(re, &r);
-
-		SDL_SetTextureColorMod(ti->b, 0, 0, 0);
-		render_text(re, ti, r, text);
-		SDL_SetTextureColorMod(ti->b, 255, 255, 255);
-	} else {
-		render_text(re, ti, r, text);
-	}
-
-	return h;
-}
-
-static void mainmenu_paint(void* userdata, SDL_Renderer* r, struct textinfo* ti)
+static void mainmenu_paint(void* userdata, struct renderer* r)
 {
 	struct mainmenu_state* m = userdata;
 
 	int rw, rh, w, h;
-	SDL_GetRendererOutputSize(r, &rw, &rh);
+	ri_outputbounds(r, &rw, &rh);
 
 	if (rw > rh) {
 		w = rh / 2;
@@ -80,9 +51,9 @@ static void mainmenu_paint(void* userdata, SDL_Renderer* r, struct textinfo* ti)
 	
 	int opty = y + logoh;
 	// Draw x
-	opty += draw_option(r, m, MAINM_PLAY, x, opty, w, h, ti, "PLAY");
-	opty += draw_option(r, m, MAINM_OPTIONS, x, opty, w, h, ti, "OPTIONS");
-	opty += draw_option(r, m, MAINM_QUIT, x, opty, w, h, ti, "QUIT");
+	opty += draw_option(r, m->selected == MAINM_PLAY, x, opty, w, h, "PLAY");
+	opty += draw_option(r, m->selected == MAINM_OPTIONS, x, opty, w, h, "OPTIONS");
+	opty += draw_option(r, m->selected == MAINM_QUIT, x, opty, w, h, "QUIT");
 }
 
 static enum menu_result mainmenu_action(void* userdata, enum action action)

@@ -4,7 +4,7 @@
 #include <assert.h>
 
 static int print_char(SDL_Renderer* rend, struct textinfo* t,
-                       const char* c, SDL_Rect* bounds)
+                       const char* c, SDL_Rect* bounds, enum text_alignment a)
 {
 	if (*c > 31 && *c < 127) {
 		SDL_Rect* src = &(t->chars[*c-31]);
@@ -32,13 +32,13 @@ static int print_char(SDL_Renderer* rend, struct textinfo* t,
 }
 
 size_t render_text(SDL_Renderer* re, struct textinfo* t,
-                   SDL_Rect bounds, const char* text)
+                   SDL_Rect bounds, enum text_alignment a, const char* text)
 {
 	assert(re != NULL);
 	assert(t != NULL);
 	assert(text != NULL);
 	
 	size_t c = 0;
-	while(text[c] != '\0' && print_char(re, t, text + c++, &bounds)) { ; }
+	while(text[c] != '\0' && print_char(re, t, text + c++, &bounds, a)) { ; }
 	return c;
 }

@@ -2,8 +2,12 @@
 #include <assert.h>
 
 #include "global.h"
+#include "render.h"
 #include "menuimpl.h"
 #include "audioproxy.h"
+
+#include "common.h"
+
 
 enum quitmenu_option {
 	QUITM_DONTEXIT = 0,
@@ -14,42 +18,12 @@ struct quitmenu_state {
 	enum quitmenu_option selected;
 };
 
-static int drawopt(SDL_Renderer* re,
-                   struct quitmenu_state* m,
-                   enum quitmenu_option opt,
-                   int x, int y,
-                   int w, int h,
-                   struct textinfo* ti,
-                   const char* text)
+static void quitmenu_paint(void* userdata, struct renderer* re)
 {
-	if (h > 50)
-		h = 50;
+	struct quitmenu_state* m = userdata;
 
-	SDL_Rect r;
-	r.x = x;
-	r.y = y;
-	r.w = w;
-	r.h = h;
-
-	SDL_SetRenderDrawColor(re, 255, 255, 255, SDL_ALPHA_OPAQUE);
-
-	if (m->selected == opt) {
-		SDL_RenderFillRect(re, &r);
-
-		SDL_SetTextureColorMod(ti->b, 0, 0, 0);
-		render_text(re, ti, r, text);
-		SDL_SetTextureColorMod(ti->b, 255, 255, 255);
-	} else {
-		render_text(re, ti, r, text);
-	}
-
-	return h;
-}
-
-static void quitmenu_paint(void* userdata, SDL_Renderer* re, struct textinfo* ti)
-{
 	int rw, rh, w, h;
-	SDL_GetRendererOutputSize(re, &rw, &rh);
+	ri_outputbounds(re, &rw, &rh);
 
 	if (rw > rh) {
 		w = rh / 2;
@@ -68,17 +42,12 @@ static void quitmenu_paint(void* userdata, SDL_Renderer* re, struct textinfo* ti
 		y = 0;
 	}
 	y = (h / 6) - 50 / 2;
-	SDL_Rect r;
-	r.x = x;
-	r.y = y;
-	r.w = w;
-	r.h = 50;
-	render_text(re, ti, r, "QUIT NOW?");
+	ri_drawtext(re, RTA_LEFT, x, y, w, 50, "QUIT NOW?");
 
 	y = h / 3;
 
-	y += drawopt(re, userdata, QUITM_DONTEXIT, x, y, w, h, ti, "NO");
-	y += drawopt(re, userdata, QUITM_EXIT, x, y, w, h, ti, "YES");
+	y += draw_option(re, m->selected == QUITM_DONTEXIT, x, y, w, h, "NO");
+	y += draw_option(re, m->selected == QUITM_EXIT, x, y, w, h, "YES");
 }
 
 static enum menu_result quitmenu_action(void* userdata, enum action action)

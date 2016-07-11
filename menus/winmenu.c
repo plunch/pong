@@ -6,32 +6,28 @@ struct winmenu_state {
 	int winner;
 };
 
-static void winmenu_paint(void* userdata, SDL_Renderer* re, struct textinfo* ti)
+static void winmenu_paint(void* userdata, struct renderer* re)
 {
 	struct winmenu_state* s = userdata;
 
 	int w, h;
-	SDL_GetRendererOutputSize(re, &w, &h);
+	ri_outputbounds(re, &w, &h);
 
-	SDL_Rect r;
-	r.x = 0;
-	r.y = 0;
-	r.w = w / 2;
-	r.h = h;
+	int x = 0;
+	int y = 0;
+	w = w / 2;
 
 	switch (s->winner) {
 		default:
-			r.w = w;
 			break;
 		case 1:
 			break;
 		case 2:
-			r.x = w / 2;
+			x = w / 2;
 			break;
 	}
 
-	SDL_SetRenderDrawColor(re, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderFillRect(re, &r);
+	ri_draw(re, NULL, x, y, w, h);
 }
 
 static enum menu_result winmenu_action(void* userdata, enum action action)

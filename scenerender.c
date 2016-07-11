@@ -1,9 +1,12 @@
 #include "scenerender.h"
+#include <SDL2/SDL.h>
 
 #include <stdio.h>
 #include <string.h>
 
 #include "numbers.h"
+
+#include "render.h"
 
 #define NUMPXSIZE 10
 
@@ -15,6 +18,7 @@ static int rintit(real v)
 #pragma GCC diagnostic pop
 }
 
+#if 0
 static void print_scorechar(SDL_Renderer* rend, char c, int x, int y)
 {
 	SDL_Rect re;
@@ -71,8 +75,9 @@ static void print_scorechar(SDL_Renderer* rend, char c, int x, int y)
 		re.y -= NUMPXSIZE * 5;
 	}
 }
+#endif
 
-static void print_score(SDL_Renderer* re, SDL_Rect* r,
+static void print_score(struct renderer* re, int rx, int ry, int rw, int rh,
                         unsigned int pt, int left)
 {
 	char strpt[5] = {'\0'};
@@ -83,84 +88,67 @@ static void print_score(SDL_Renderer* re, SDL_Rect* r,
 
 	if (left) {
 		int x, y;
-		x = r->x;
-		y = r->y;
+		x = rx;
+		y = ry;
 
-		for(size_t i = 0; i < l; ++i) {
-			print_scorechar(re, strpt[i], x, y);
-			x += NUMPXSIZE * 4;
-		}
+		ri_drawtext(re, RTA_LEFT, x, y, rw, rh, strpt);
 	} else {
 		int x, y;
-		x = r->x + r->w - NUMPXSIZE * 3;
-		y = r->y;
+		x = rx + rw - NUMPXSIZE * 3;
+		y = ry;
 
-		for(size_t i = l; i >= 1; --i) {
-			print_scorechar(re, strpt[i-1], x, y);
-			x -= NUMPXSIZE * 4;
-		}
+		ri_drawtext(re, RTA_RIGHT, x, y, rw, rh, strpt);
 	}
 }
 
-void draw_scene(struct scene* s, SDL_Renderer* re)
+void draw_scene(struct scene* s,
+                struct renderer* re,
+                struct render_item* paddle1,
+                struct render_item* paddle2,
+                struct render_item* ball,
+                struct render_item* field)
 {
-	SDL_SetRenderDrawColor(re, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	SDL_RenderClear(re);
-
 	int w, h;
-	SDL_GetRendererOutputSize(re, &w, &h);
+	ri_outputbounds(re, &w, &h);
 
-	// Center
-	SDL_SetRenderDrawColor(re, 190, 190, 190, SDL_ALPHA_OPAQUE);
-
-	SDL_RenderDrawLine(re, rintit(s->w / 2), 0, rintit(s->w / 2), rintit(s->h));
-
-
-	SDL_Rect r;
-	r.x = 0; r.y = 0;
-	r.w = rintit(s->w); r.h = rintit(s->h);
-	SDL_RenderDrawRect(re, &r);
-
-
-
-	SDL_SetRenderDrawColor(re, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	// Field
+	
+	ri_draw(re, field, 0, 0, rintit(s->w), rintit(s->h));
 
 
 	// Ball
 
-	r.x = rintit(s->b.x);
-	r.y = rintit(s->b.y);
-	r.w = BALLSIZE;
-	r.h = BALLSIZE;
-
-	SDL_RenderFillRect(re, &r);
+	ri_draw(re, ball, 
+	        rintit(s->b.x),
+	        rintit(s->b.y),
+	        BALLSIZE, BALLSIZE);
 
 	
 	// Player 1
 
-	r.x = rintit(s->p1.x);
-	r.y = rintit(s->p1.y);
-	r.w = PADDLETHICKNESS;
-	r.h = rintit(s->p1.width);
+	ri_draw(re, paddle1,
+	        rintit(s->p1.x),
+	        rintit(s->p1.y),
+	        PADDLETHICKNESS,
+	        rintit(s->p1.width));
 
-	SDL_RenderFillRect(re, &r);
 
+	// Player 2
 
-	// Player 1
-	//
-	r.x = rintit(s->p2.x);
-	r.y = rintit(s->p2.y);
-	r.h = rintit(s->p2.width);
+	ri_draw(re, paddle2,
+	        rintit(s->p2.x),
+	        rintit(s->p2.y),
+	        PADDLETHICKNESS,
+	        rintit(s->p2.width));
 
-	SDL_RenderFillRect(re, &r);
+	int tx = 30;
+	int ty = 30;
+	int tw = rintit(s->w / 2.0 - 60);
+	int th = NUMPXSIZE * 5;
 
-	r.x = 30;
-	r.y = 30;
-	r.w = rintit(s->w / 2.0 - 60);
-	r.h = NUMPXSIZE * 5;
+	print_score(re, tx, ty, tw, th, s->p1pt, 0);
 
-	print_score(re, &r, s->p1pt, 0);
-
-	r.x = rintit(s->w / 2.0 + 30.0);
-	print_score(re, &r, s->p2pt, 1);
+	
+	tx = rintit(s->w / 2.0 + 30.0);
+	print_score(re, tx, ty, tw, th, s->p2pt, 1);
 }

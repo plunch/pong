@@ -33,7 +33,7 @@ static enum action keyevent(SDL_KeyboardEvent* e)
 	}
 }
 
-enum menu_result run_menu(SDL_Renderer* r, struct menu* m)
+enum menu_result run_menu(struct menu* m)
 {
 	assert(m != NULL && m->paint != NULL && m->action != NULL);
 
@@ -55,18 +55,18 @@ enum menu_result run_menu(SDL_Renderer* r, struct menu* m)
 
 		res = m->action(m->userdata, a);
 
-		SDL_SetRenderDrawColor(r, 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderClear(r);
+		ri_clear(m->renderer);
 
-		m->paint(m->userdata, r, m->text);
+		m->paint(m->userdata, m->renderer);
 
-		SDL_RenderPresent(r);
+		ri_flip(m->renderer);
 	}
 	return res;
 }
 
-int create_menu(struct menu* m, struct textinfo* ti)
+int create_menu(struct menu* m, struct renderer* r)
 {
-	m->text = ti;
+	m->renderer = r;
+	return 1;
 }
 

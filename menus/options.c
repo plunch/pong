@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include "../global.h"
+#include "render.h"
 
 #include "../audioproxy.h"
 
@@ -18,25 +19,22 @@ struct optionsmenu_state {
 	enum options_option selected;
 };
 
-static void optionsmenu_paint(void* userdata, SDL_Renderer* re, struct textinfo* ti)
+static void optionsmenu_paint(void* userdata, struct renderer* re)
 {
 	struct optionsmenu_state* s = userdata;
 	UNUSED(s);
 
 	int w, h;
-	SDL_GetRendererOutputSize(re, &w, &h);
+	ri_outputbounds(re, &w, &h);
 
-	SDL_Rect r;
-	r.x = 0;
-	r.y = 0;
+	int x = 0;
+	int y = 0;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wbad-function-cast"
-	r.w = (int)rintf((float)w * proxy_getvolume());
-	r.h = h;
+	w = (int)rintf((float)w * proxy_getvolume());
 #pragma GCC diagnostic pop
 
-	SDL_SetRenderDrawColor(re, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderFillRect(re, &r);
+	ri_draw(re, NULL, x, y, w, h);
 }
 
 static enum menu_result optionsmenu_action(void* userdata, enum action action)

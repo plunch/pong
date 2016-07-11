@@ -89,29 +89,31 @@ static enum menu_result read_input(struct scene* s, struct input* in, struct inp
 	return MNU_NONE;
 }
 
-enum menu_result main_loop(SDL_Window* w,
-                           SDL_Renderer* r,
+enum menu_result main_loop(struct renderer* r,
                            struct scene* s,
-                           struct inputsourcelist* config,
-                           struct textinfo* ti)
+                           struct inputsourcelist* config)
 {
-	UNUSED(w);
 
 	struct menu men;
 	struct input in;
-	
+
+	struct render_item* paddle1 = ri_load(r, "paddle1");
+	struct render_item* paddle2 = ri_load(r, "paddle2");
+	struct render_item* ball = ri_load(r, "ball");
+	struct render_item* field = ri_load(r, "field");
+
 	uint32_t next_tick = SDL_GetTicks();
 	while(1) {
 		unsigned int loops = 0;
 		while(SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
 			switch (read_input(s, &in, config)) {
 				case MNU_QUIT:
-					if (!(create_menu(&men, ti) && create_quitmenu(&men))) {
+					if (!(create_menu(&men, r) && create_quitmenu(&men))) {
 						perror("Create quit menu");
 						return MNU_QUIT;
 					}
 					uint32_t tick_diff = SDL_GetTicks() - next_tick;
-					enum menu_result qres = run_menu(r, &men);
+					enum menu_result qres = run_menu(&men);
 					destroy_quitmenu(&men);
 					next_tick = SDL_GetTicks() - tick_diff;
 					if (qres == MNU_QUIT)
@@ -126,11 +128,11 @@ enum menu_result main_loop(SDL_Window* w,
 
 			int winner = step_simulation(s);
 			if (winner >= 0) {
-				if (!(create_menu(&men, ti) && create_winmenu(&men, winner))) {
+				if (!(create_menu(&men, r) && create_winmenu(&men, winner))) {
 					perror("Create win menu");
 					return MNU_QUIT;
 				}
-				run_menu(r, &men);
+				run_menu(&men);
 				destroy_winmenu(&men);
 				return MNU_BACK;
 			}
@@ -139,10 +141,10 @@ enum menu_result main_loop(SDL_Window* w,
 			loops++;
 		}
 
-		SDL_RenderClear(r);
+		ri_clear(r);
 
-		draw_scene(s, r);
+		draw_scene(s, r, paddle1, paddle2, ball, field);
 
-		SDL_RenderPresent(r);
+		ri_flip(r);
 	}
 }

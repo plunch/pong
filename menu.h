@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "text.h"
+#include "render.h"
 
 #include <SDL2/SDL.h>
 
@@ -18,8 +18,8 @@ enum menu_result {
 
 struct menu;
 
-enum menu_result run_menu(SDL_Renderer*, struct menu*);
+enum menu_result run_menu(struct menu*);
 
-int create_menu(struct menu*, struct textinfo*);
+int create_menu(struct menu*, struct renderer*);
 
 #endif /* MENU_H */

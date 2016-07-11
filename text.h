@@ -8,6 +8,11 @@ struct textinfo {
 	SDL_Rect chars[95]; // ASCII only
 };
 
-size_t render_text(SDL_Renderer*, struct textinfo*, SDL_Rect, const char*);
+enum text_alignment {
+	TA_RIGHT,
+	TA_LEFT,
+};
+
+size_t render_text(SDL_Renderer*, struct textinfo*, SDL_Rect, enum text_alignment, const char*);
 
 #endif /* TEXT_H */

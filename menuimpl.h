@@ -16,9 +16,9 @@ enum action {
 
 struct menu {
 	void* userdata;
-	void (*paint)(void*, SDL_Renderer*, struct textinfo*);
+	struct renderer* renderer;
+	void (*paint)(void*, struct renderer*);
 	enum menu_result (*action)(void*, enum action);
-	struct textinfo* text;
 };
 
 #endif /* MENUIMPL_H */
