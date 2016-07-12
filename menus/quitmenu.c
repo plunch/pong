@@ -42,7 +42,7 @@ static void quitmenu_paint(void* userdata, struct renderer* re)
 		y = 0;
 	}
 	y = (h / 6) - 50 / 2;
-	ri_drawtext(re, RTA_LEFT, x, y, w, 50, "QUIT NOW?");
+	ri_drawtext(re, RTA_LEFT, RTS_DEFAULT, x, y, w, 50, "QUIT NOW?");
 
 	y = h / 3;
 

@@ -12,8 +12,15 @@ enum render_text_alignment {
 	RTA_RIGHT,
 };
 
+enum render_text_style {
+	RTS_DEFAULT,
+	RTS_SELECTED,
+	RTS_DISABLED,
+};
+
 size_t ri_drawtext(struct renderer* r,
                    enum render_text_alignment a,
+		   enum render_text_style s,
                    int x, int y,
                    int w, int h,
                    const char* text);

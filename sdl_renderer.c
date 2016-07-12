@@ -71,7 +71,9 @@ static void draw(void* data, struct render_item* item,
 	}
 }
 
-static size_t drawtext(void* data, enum render_text_alignment a,
+static size_t drawtext(void* data, 
+                       enum render_text_alignment a,
+                       enum render_text_style s,
                        int x, int y, int w, int h,
                        const char* text)
 {
@@ -93,7 +95,14 @@ static size_t drawtext(void* data, enum render_text_alignment a,
 			assert(0);
 	}
 	
-	return render_text(re->rend, re->text, region, align, text);
+	if (s & RTS_SELECTED) {
+		SDL_SetRenderDrawColor(re->rend, 255, 255, 255, SDL_ALPHA_OPAQUE);
+		SDL_RenderFillRect(re->rend, &region);
+		SDL_SetTextureColorMod(re->text->b, 0, 0, 0);
+	}
+	size_t ret = render_text(re->rend, re->text, region, align, text);
+	if (s & RTS_SELECTED) SDL_SetTextureColorMod(re->text->b, 255, 255, 255);
+	return ret;
 }
 
 static void clear(void* data)

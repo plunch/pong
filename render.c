@@ -14,6 +14,7 @@ static void uiz(const char* what)
 
 size_t ri_drawtext(struct renderer* r,
                    enum render_text_alignment a,
+		   enum render_text_style s,
                    int x, int y,
                    int w, int h,
                    const char* text)
@@ -24,7 +25,7 @@ size_t ri_drawtext(struct renderer* r,
 	}
 	assert(text != NULL);
 
-	return r->drawtext(r->userdata, a, x, y, w, h, text);
+	return r->drawtext(r->userdata, a, s, x, y, w, h, text);
 }
 
 int ri_outputbounds(struct renderer* r, int* w, int* h)

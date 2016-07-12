@@ -19,6 +19,7 @@ struct renderer {
 	void* userdata;
 	size_t (*drawtext)(void*, 
 	                   enum render_text_alignment,
+			   enum render_text_style,
 	                   int, // x
 	                   int, // y
 	                   int, // w

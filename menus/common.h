@@ -11,9 +11,7 @@ static int draw_option(struct renderer* re, int isSelected,
 	if (h > 50)
 		h = 50;
 
-	UNUSED(isSelected);
-
-	ri_drawtext(re, RTA_LEFT, x, y, w, h, text);
+	ri_drawtext(re, RTA_LEFT, isSelected ? RTS_SELECTED : RTS_DEFAULT, x, y, w, h, text);
 	return h;
 }
 

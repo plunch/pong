@@ -91,13 +91,13 @@ static void print_score(struct renderer* re, int rx, int ry, int rw, int rh,
 		x = rx;
 		y = ry;
 
-		ri_drawtext(re, RTA_LEFT, x, y, rw, rh, strpt);
+		ri_drawtext(re, RTA_LEFT, RTS_DEFAULT, x, y, rw, rh, strpt);
 	} else {
 		int x, y;
 		x = rx + rw - NUMPXSIZE * 3;
 		y = ry;
 
-		ri_drawtext(re, RTA_RIGHT, x, y, rw, rh, strpt);
+		ri_drawtext(re, RTA_RIGHT, RTS_DEFAULT, x, y, rw, rh, strpt);
 	}
 }
 
