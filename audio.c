@@ -2,6 +2,7 @@
 #include "global.h"
 
 #include <stdint.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
 
@@ -15,6 +16,8 @@ struct sample {
 struct audio_data {
 	SDL_AudioDeviceID dev;
 	SDL_AudioSpec spec;
+
+	SDL_AudioCVT conversion;
 
 	size_t sample;
 
@@ -44,9 +47,21 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 {
 	if (len <= 0) return;
 
-	size_t l = (size_t)len;
 
 	struct audio_data* data = userdata;
+
+	size_t l;
+	if (data->conversion.needed) {
+		double newlen = ceil(len / data->conversion.len_ratio);
+		data->conversion.buf = stream;
+		data->conversion.len = (int)newlen;
+		l = (size_t)newlen;
+	} else {
+		l = (size_t)len;
+	}
+
+	memset(stream, (int)data->spec.silence, (size_t)len);
+
 
 	for(size_t i = 0; i < l; ++i) {
 		float contrib = 0;
@@ -71,10 +86,11 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 		if (towrite < 0) towrite = 0;
 		stream[i] = (Uint8)(UINT8_MAX * towrite);
 	}
+	if (data->conversion.needed)
+		SDL_ConvertAudio(&data->conversion);
 
 	// Update samples
-	for(size_t sidx = 0; sidx < CONCURRENT_SAMPLES; ++sidx)
-	{
+	for(size_t sidx = 0; sidx < CONCURRENT_SAMPLES; ++sidx) {
 		if (data->samples[sidx].remaining < l) {
 			// All written
 			data->samples[sidx].remaining = 0;
@@ -131,7 +147,7 @@ struct audio_data* audio_init()
 	SDL_AudioSpec want;
 
 	want.freq = 48000;
-	want.format = AUDIO_U8;
+	want.format = AUDIO_S16;
 	want.channels = 2;
 	want.samples = 2048;
 	want.callback = &sdl_audio_callback;
@@ -141,10 +157,13 @@ struct audio_data* audio_init()
 	                                0, // We don't want to record
 	                                &want,
 	                                &data->spec,
-	                                SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
+	                                SDL_AUDIO_ALLOW_ANY_CHANGE);
 
 	if (data->dev > 0) {
 		SDL_PauseAudioDevice(data->dev, 0);
+		SDL_BuildAudioCVT(&data->conversion,
+		                  AUDIO_U8, 1, data->spec.samples,
+		                  data->spec.format, 2, data->spec.samples);
 	} else {
 		sdl_error("Audio disabled");
 	}
