@@ -38,7 +38,8 @@ GCC_FLAGS = -std=c99 \
 CLANG_FLAGS = -std=c99\
 	      -Weverything \
 	      -Wno-padded \
-	      -Wno-switch-enum
+	      -Wno-switch-enum \
+	      -Wno-covered-switch-default
 COMPILE_FLAGS = $(CLANG_FLAGS)
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG -Ofast
