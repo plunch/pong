@@ -95,7 +95,7 @@ enum menu_result main_loop(struct renderer* r,
 {
 
 	struct menu men;
-	struct input in;
+	struct input in = { .input={ 0 } };
 
 	struct render_item* paddle1 = ri_load(r, "paddle1");
 	struct render_item* paddle2 = ri_load(r, "paddle2");
