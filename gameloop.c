@@ -73,18 +73,18 @@ static enum menu_result read_input(struct scene* s, struct input* in, struct inp
 
 	s->p1.d = 0;
 	if (in->input[GA_P1_DOWN] > 0) {
-		s->p1.d += 1.0;
+		s->p1.d = 1;
 	}
 	if (in->input[GA_P1_UP] > 0) {
-		s->p1.d -= 1.0;
+		s->p1.d = -1;
 	}
 
 	s->p2.d = 0;
 	if (in->input[GA_P2_DOWN] > 0) {
-		s->p2.d += 1.0;
+		s->p2.d = 1;
 	}
 	if (in->input[GA_P2_UP] > 0) {
-		s->p2.d -= 1.0;
+		s->p2.d = -1;
 	}
 	return MNU_NONE;
 }
