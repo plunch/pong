@@ -12,10 +12,7 @@
 
 static int rintit(real v)
 {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wbad-function-cast"
-	return (int)rint(v);
-#pragma GCC diagnostic pop
+	return (int)(rint(v));
 }
 
 #if 0

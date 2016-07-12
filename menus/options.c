@@ -30,10 +30,7 @@ static void optionsmenu_paint(void* userdata, struct renderer* re)
 
 	int x = 0;
 	int y = 0;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wbad-function-cast"
-	w = (int)rintf((float)w * proxy_getvolume());
-#pragma GCC diagnostic pop
+	w = (int)(rintf((float)w * proxy_getvolume()));
 
 	ri_draw(re, s->slider, x, y, w, h);
 }
