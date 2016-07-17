@@ -85,7 +85,11 @@ static enum menu_result optionsmenu_action(void* userdata, enum action action)
 
 void destroy_optionsmenu(struct menu* m)
 {
-	if (m->userdata != NULL) free(m->userdata);
+	if (m->userdata != NULL) {
+		struct optionsmenu_state* s = m->userdata;
+		ri_destroy(m->renderer, s->slider);
+		free(s);
+	}
 }
 
 int create_optionsmenu(struct menu* m)

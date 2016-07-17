@@ -161,6 +161,7 @@ mainmenu:
 	audio_destroy(aud);
 #endif
 
+	destroy_sdl_renderer(&grend);
 	SDL_DestroyRenderer(r);
 	SDL_DestroyWindow(w);
 	SDL_Quit();

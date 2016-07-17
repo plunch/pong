@@ -152,3 +152,9 @@ int create_sdl_renderer(struct renderer* rend, SDL_Window* w, SDL_Renderer* r, s
 	rend->clear = & clear;
 	return 0;
 }
+
+void destroy_sdl_renderer(struct renderer* rend)
+{
+	if (rend != NULL && rend->userdata != NULL)
+		free(rend->userdata);
+}

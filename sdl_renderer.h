@@ -18,4 +18,6 @@ struct render_item {
 
 int create_sdl_renderer(struct renderer* rend, SDL_Window* w, SDL_Renderer* r, struct textinfo* ti);
 
+void destroy_sdl_renderer(struct renderer*);
+
 #endif /* SDLRENDERER_H */

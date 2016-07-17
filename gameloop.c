@@ -15,6 +15,7 @@
 #include "menus/quitmenu.h"
 
 #include <stdbool.h>
+#include <assert.h>
 
 static enum menu_result read_input(struct scene* s, struct input* in, struct inputsourcelist* conf) {
 	SDL_Event e;
@@ -93,6 +94,7 @@ enum menu_result main_loop(struct renderer* r,
                            struct scene* s,
                            struct inputsourcelist* config)
 {
+	enum menu_result retval = MNU_NONE;
 
 	struct menu men;
 	struct input in = { .input={ 0 } };
@@ -116,12 +118,15 @@ enum menu_result main_loop(struct renderer* r,
 					enum menu_result qres = run_menu(&men);
 					destroy_quitmenu(&men);
 					next_tick = SDL_GetTicks() - tick_diff;
-					if (qres == MNU_QUIT)
-						return MNU_QUIT;
+					if (qres == MNU_QUIT) {
+						retval = MNU_QUIT;
+						goto exit;
+					}
 					break;
 				case MNU_BACK:
 					play_menu_back();
-					return MNU_BACK;
+					retval = MNU_BACK;
+					goto exit;
 				default:
 					break;
 			}
@@ -130,11 +135,13 @@ enum menu_result main_loop(struct renderer* r,
 			if (winner >= 0) {
 				if (!(create_menu(&men, r) && create_winmenu(&men, winner))) {
 					perror("Create win menu");
-					return MNU_QUIT;
+					retval = MNU_QUIT;
+					goto exit;
 				}
 				run_menu(&men);
 				destroy_winmenu(&men);
-				return MNU_BACK;
+				retval = MNU_BACK;
+				goto exit;
 			}
 
 			next_tick += SKIP_TICKS;
@@ -147,4 +154,12 @@ enum menu_result main_loop(struct renderer* r,
 
 		ri_flip(r);
 	}
+
+exit:
+	ri_destroy(r, paddle1);
+	ri_destroy(r, paddle2);
+	ri_destroy(r, ball);
+	ri_destroy(r, field);
+	assert(retval != MNU_NONE);
+	return retval;
 }

@@ -43,7 +43,11 @@ static enum menu_result winmenu_action(void* userdata, enum action action)
 
 void destroy_winmenu(struct menu* m)
 {
-	if (m->userdata != NULL) free(m->userdata);
+	if (m->userdata != NULL) {
+		struct winmenu_state* s = m->userdata;
+		ri_destroy(m->renderer, s->gfx);
+		free(m->userdata);
+	}
 }
 
 int create_winmenu(struct menu* m, int winner)
