@@ -42,7 +42,7 @@ CLANG_FLAGS = -std=c99\
 	      -Wno-covered-switch-default
 COMPILE_FLAGS = $(GCC_FLAGS)
 # Additional release-specific flags
-RCOMPILE_FLAGS = -D NDEBUG -Ofast
+RCOMPILE_FLAGS = -D NDEBUG -O2 -flto
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -D DEBUG -g
 # Add additional include paths
@@ -50,7 +50,7 @@ INCLUDES = -I $(SRC_PATH)/ `pkg-config --cflags sdl2`
 # General linker settings
 LINK_FLAGS = -lm -ldl `pkg-config --libs sdl2`
 # Additional release-specific linker settings
-RLINK_FLAGS = 
+RLINK_FLAGS = -flto
 # Additional debug-specific linker settings
 DLINK_FLAGS = 
 # Destination directory, like a jail or mounted system
