@@ -1,6 +1,8 @@
 #include "options.h"
 
 #include <math.h>
+#include <limits.h>
+#include <assert.h>
 #include "../global.h"
 #include "render.h"
 
@@ -30,7 +32,9 @@ static void optionsmenu_paint(void* userdata, struct renderer* re)
 
 	int x = 0;
 	int y = 0;
-	w = (int)(rintf((float)w * proxy_getvolume()));
+	long int roundresult = lrintf(((float)w) * proxy_getvolume());
+	assert(roundresult < INT_MAX && roundresult > INT_MIN);
+	w = (int)roundresult;
 
 	ri_draw(re, s->slider, x, y, w, h);
 }

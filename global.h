@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
 #define UNUSED(x) (void)(x)
 
 #define printerr(x) do { fprintf(stderr, " %s:%i: %s\n", __FILE__, __LINE__, x); } while(0)

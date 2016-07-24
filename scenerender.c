@@ -3,15 +3,18 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 
 #include "render.h"
 
 #define NUMPXSIZE 10
 
-static int rintit(real v)
+static int round2integer(real v)
 {
-	return (int)(rint(v));
+	long int roundresult = lrint_real(v);
+	assert(roundresult < INT_MAX && roundresult > INT_MIN);
+	return (int)roundresult;
 }
 
 static void print_score(struct renderer* re, int rx, int ry, int rw, int rh,
@@ -50,42 +53,42 @@ void draw_scene(struct scene* s,
 
 	// Field
 	
-	ri_draw(re, field, 0, 0, rintit(s->w), rintit(s->h));
+	ri_draw(re, field, 0, 0, round2integer(s->w), round2integer(s->h));
 
 
 	// Ball
 
 	ri_draw(re, ball, 
-	        rintit(s->b.x),
-	        rintit(s->b.y),
+	        round2integer(s->b.x),
+	        round2integer(s->b.y),
 	        BALLSIZE, BALLSIZE);
 
 	
 	// Player 1
 
 	ri_draw(re, paddle1,
-	        rintit(s->p1.x),
-	        rintit(s->p1.y),
+	        round2integer(s->p1.x),
+	        round2integer(s->p1.y),
 	        PADDLETHICKNESS,
-	        rintit(s->p1.width));
+	        round2integer(s->p1.width));
 
 
 	// Player 2
 
 	ri_draw(re, paddle2,
-	        rintit(s->p2.x),
-	        rintit(s->p2.y),
+	        round2integer(s->p2.x),
+	        round2integer(s->p2.y),
 	        PADDLETHICKNESS,
-	        rintit(s->p2.width));
+	        round2integer(s->p2.width));
 
 	int tx = 30;
 	int ty = 30;
-	int tw = rintit(s->w / 2.0 - 60);
+	int tw = round2integer(s->w / 2.0 - 60);
 	int th = NUMPXSIZE * 5;
 
 	print_score(re, tx, ty, tw, th, s->p1pt, 0);
 
 	
-	tx = rintit(s->w / 2.0 + 30.0);
+	tx = round2integer(s->w / 2.0 + 30.0);
 	print_score(re, tx, ty, tw, th, s->p2pt, 1);
 }

@@ -3,4 +3,6 @@
 
 typedef double real;
 
+#define lrint_real(x) lrint(x)
+
 #endif /* TYPEDEFS_H */

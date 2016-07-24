@@ -15,7 +15,9 @@ static int print_char(SDL_Renderer* rend, struct textinfo* t,
 		int bw = bounds->w;
 
 		double ratio = src->w / (double)src->h;
-		int w = (int)(rint(bounds->h * ratio));
+		long int roundresult = lrint(bounds->h * ratio);
+		assert(roundresult < INT_MAX && roundresult > INT_MAX);
+		int w = (int)roundresult;
 		bounds->w = w;
 
 		SDL_RenderCopy(rend, t->b, src, bounds);

@@ -127,7 +127,7 @@ void audio_play(struct audio_data* d, enum wavetype type,
 	d->samples[idx].frequency = freq;
 	d->samples[idx].volume = vol;
 	d->samples[idx].type = type;
-	d->samples[idx].remaining = (size_t)(ceilf(samples_per_ms * (float)ms));
+	d->samples[idx].remaining = (size_t)(lrintf(samples_per_ms * (float)ms));
 
 	SDL_UnlockAudioDevice(d->dev);
 }
