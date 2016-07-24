@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "numbers.h"
 
 #include "render.h"
 
@@ -14,65 +13,6 @@ static int rintit(real v)
 {
 	return (int)(rint(v));
 }
-
-#if 0
-static void print_scorechar(SDL_Renderer* rend, char c, int x, int y)
-{
-	SDL_Rect re;
-	re.x = x;
-	re.y = y;
-	re.w = NUMPXSIZE;
-	re.h = NUMPXSIZE;
-
-	const char (*num)[5][3];
-
-	switch(c) {
-		case '0':
-			num = &num0;
-			break;
-		case '1':
-			num = &num1;
-			break;
-		case '2':
-			num = &num2;
-			break;
-		case '3':
-			num = &num3;
-			break;
-		case '4':
-			num = &num4;
-			break;
-		case '5':
-			num = &num5;
-			break;
-		case '6':
-			num = &num6;
-			break;
-		case '7':
-			num = &num7;
-			break;
-		case '8':
-			num = &num8;
-			break;
-		case '9':
-			num = &num9;
-			break;
-		default:
-			return;
-	}
-
-	for(int col = 0; col < 3; ++col) {
-		for(int row = 0; row < 5; ++row) {
-			if ((*num)[row][col]) {
-				SDL_RenderFillRect(rend, &re);
-			}
-			re.y += NUMPXSIZE;
-		}
-		re.x += NUMPXSIZE;
-		re.y -= NUMPXSIZE * 5;
-	}
-}
-#endif
 
 static void print_score(struct renderer* re, int rx, int ry, int rw, int rh,
                         unsigned int pt, int left)
