@@ -1,6 +1,7 @@
 #include "text.h"
 
 #include <math.h>
+#include <limits.h>
 #include <assert.h>
 
 static int print_char(SDL_Renderer* rend, struct textinfo* t,
