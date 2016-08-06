@@ -5,6 +5,12 @@
 
 static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent* e)
 {
+#if JOY_DBG & 0x1
+	fprintf(stderr, "JS: j%i ball=%i xrel=%i yrel=%i\n",
+	                (int)e->which,
+	                (unsigned char)e->ball,
+	                e->xrel, e->yrel);
+#endif
 	for(size_t i = 0; i < m->balen; ++i) {
 		if (m->balls[i].joystick == e->which
 		 && m->balls[i].ball == e->ball) {
@@ -21,7 +27,12 @@ static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent*
 
 static void axis(struct joystick_mapping* m, struct input* in, SDL_JoyAxisEvent* e)
 {
-	fprintf(stderr, "JS: axis=%i value=" PRIREAL ", j=%i\n", (unsigned char)e->axis, (real)e->value, (int)e->which);
+#if JOY_DBG & 0x1
+	fprintf(stderr, "JS: j%i axis=%i value=%i\n",
+	                (int)e->which,
+	                (unsigned char)e->axis,
+	                e->value);
+#endif
 	for(size_t i = 0; i < m->alen; ++i) {
 		if (m->axes[i].joystick == e->which
 		 && m->axes[i].axis == e->axis) {
@@ -33,9 +44,16 @@ static void axis(struct joystick_mapping* m, struct input* in, SDL_JoyAxisEvent*
 	}
 }
 
-static void button(struct joystick_mapping* m, struct input* in, SDL_JoyButtonEvent* e)
+static void button(struct joystick_mapping* m,
+                   struct input* in,
+                   SDL_JoyButtonEvent* e)
 {
-	//fprintf(stderr, "JS: button=%i value=%i, j=%i\n", (unsigned char)e->button, e->state == SDL_PRESSED ? 1 : 0, (int)e->which);
+#if JOY_DBG & 0x1
+	fprintf(stderr, "JS: j%i button=%i pressed=%s\n",
+	                (int)e->which,
+	                (unsigned char)e->button,
+	                e->state == SDL_PRESSED ? "true" : "false");
+#endif
 	for(size_t i = 0; i < m->blen; ++i) {
 		if (m->buttons[i].joystick == e->which) {
 			if (m->buttons[i].pbutton == e->button) {
@@ -53,9 +71,15 @@ static void button(struct joystick_mapping* m, struct input* in, SDL_JoyButtonEv
 	}
 }
 
-static void hat(struct joystick_mapping* m, struct input* in, SDL_JoyHatEvent* e)
+static void hat(struct joystick_mapping* m, struct input* in,
+               SDL_JoyHatEvent* e)
 {
-	//fprintf(stderr, "JS: hat=%i value=%i, j=%i\n", (unsigned char)e->hat, e->value, (int)e->which);
+#if JOY_DBG & 0x1
+	fprintf(stderr, "JS: j=%i hat=%i direction=%i\n",
+	                (int)e->which,
+	                (unsigned char)e->hat,
+	                (int)e->value);
+#endif
 	for(size_t i = 0; i < m->hlen; ++i) {
 		if (m->hats[i].joystick == e->which
 		 && m->hats[i].hat == e->hat) {
