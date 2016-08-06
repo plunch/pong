@@ -7,27 +7,27 @@
 #include <SDL2/SDL.h>
 
 struct joyaxis_mapping {
-	Uint8 joystick;
+	SDL_JoystickID joystick;
 	Uint8 axis;
 	Sint16 deadzone;
 	enum game_action action;
 };
 
 struct joybutton_mapping {
-	Uint8 joystick;
+	SDL_JoystickID joystick;
 	Uint8 button;
 	enum game_action action;
 };
 
 struct joyhat_mapping {
-	Uint8 joystick;
+	SDL_JoystickID joystick;
 	Uint8 hat;
 	Uint8 ppos, npos;
 	enum game_action action;
 };
 
 struct joyball_mapping {
-	Uint8 joystick;
+	SDL_JoystickID joystick;
 	Uint8 ball;
 	unsigned int horizontal : 1;
 	enum game_action action;

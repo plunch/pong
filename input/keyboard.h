@@ -7,7 +7,8 @@
 #include <SDL2/SDL.h>
 
 struct keyboard_mapping_entry {
-	SDL_Keycode keycode;
+	SDL_Keycode pcode;
+	SDL_Keycode ncode;
 	enum game_action action;
 };
 
@@ -16,8 +17,7 @@ struct keyboard_mapping {
 	size_t len;
 };
 
-void kbinput_apply(struct keyboard_mapping*, struct input*, SDL_Event*);
-
+/*
 void kbinput_unmap_key(struct keyboard_mapping*, SDL_Keycode);
 void kbinput_map(struct keyboard_mapping*, SDL_Keycode, enum game_action);
 
@@ -26,6 +26,7 @@ do { \
 	kbinput_unmap_key(km, code); \
 	kbinput_map(km, code, action); \
 } while (0)
+*/
 
 void kbinput_make_inputsource(struct inputsource_sdl*, struct keyboard_mapping*);
 

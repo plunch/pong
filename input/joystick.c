@@ -1,6 +1,7 @@
 #include "joystick.h"
 #include <assert.h>
 #include <stdlib.h> /* abs */
+#include <stdio.h>
 
 static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent* e)
 {
@@ -20,11 +21,12 @@ static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent*
 
 static void axis(struct joystick_mapping* m, struct input* in, SDL_JoyAxisEvent* e)
 {
+	fprintf(stderr, "JS: axis=%i value=" PRIREAL ", j=%i\n", (unsigned char)e->axis, (real)e->value, (int)e->which);
 	for(size_t i = 0; i < m->alen; ++i) {
 		if (m->axes[i].joystick == e->which
 		 && m->axes[i].axis == e->axis) {
 			real input = 0;
-			if (m->axes[i].deadzone > abs(e->value))
+			if (m->axes[i].deadzone < abs(e->value))
 				input = (real)e->value;
 			in->input[m->axes[i].action] = input;
 		}
@@ -33,6 +35,7 @@ static void axis(struct joystick_mapping* m, struct input* in, SDL_JoyAxisEvent*
 
 static void button(struct joystick_mapping* m, struct input* in, SDL_JoyButtonEvent* e)
 {
+	//fprintf(stderr, "JS: button=%i value=%i, j=%i\n", (unsigned char)e->button, e->state == SDL_PRESSED ? 1 : 0, (int)e->which);
 	for(size_t i = 0; i < m->blen; ++i) {
 		if (m->buttons[i].joystick == e->which
 		 && m->buttons[i].button == e->button) {
@@ -44,6 +47,7 @@ static void button(struct joystick_mapping* m, struct input* in, SDL_JoyButtonEv
 
 static void hat(struct joystick_mapping* m, struct input* in, SDL_JoyHatEvent* e)
 {
+	//fprintf(stderr, "JS: hat=%i value=%i, j=%i\n", (unsigned char)e->hat, e->value, (int)e->which);
 	for(size_t i = 0; i < m->hlen; ++i) {
 		if (m->hats[i].joystick == e->which
 		 && m->hats[i].hat == e->hat) {

@@ -12,6 +12,7 @@
 
 #include "inputsource_sdl.h"
 #include "input/keyboard.h"
+#include "input/joystick.h"
 
 #include "menus/mainmenu.h"
 #include "menus/options.h"
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
 {
 	UNUSED(argc);
 
-	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK) != 0) {
 		die_sdl("Initialize SDL");
 	}
 
@@ -96,20 +97,38 @@ int main(int argc, char* argv[])
 	}
 
 	struct keyboard_mapping_entry keymap[] = {
-		{SDLK_w, GA_P1_UP},
-		{SDLK_s, GA_P1_DOWN},
-		{SDLK_UP, GA_P2_UP},
-		{SDLK_DOWN, GA_P2_DOWN},
+		/*{SDLK_w, SDLK_s, GA_P1_MOVEMENT},*/
+		{SDLK_DOWN, SDLK_UP, GA_P2_MOVEMENT},
+	};
+
+	struct joyaxis_mapping jamap[1];
+
+	SDL_Joystick* js1 = SDL_JoystickOpen(0);
+	
+	SDL_JoystickID js = SDL_JoystickInstanceID(js1);
+
+	jamap[0].joystick = js;
+	jamap[0].axis = 1;
+	jamap[0].deadzone = 100;
+	jamap[0].action = GA_P1_MOVEMENT;
+
+
+
+	struct joystick_mapping jconf = {
+		jamap, NULL, NULL, NULL,
+		ARRAYLEN(jamap),    0,    0,    0,
 	};
 
 	struct keyboard_mapping kconf = { keymap, ARRAYLEN(keymap) };
 
-	struct inputsource_sdl kinput;
-	kbinput_make_inputsource(&kinput, &kconf);
+
+	struct inputsource_sdl input[2];
+	kbinput_make_inputsource(&input[0], &kconf);
+	jsinput_make_inputsource(&input[1], &jconf);
 
 	// TODO: Allocate space on heap for input sources
 	// to be able too dynamically add and remove inputs
-	struct inputsourcelist inplist = { &kinput, 1 };
+	struct inputsourcelist inplist = { input, ARRAYLEN(input) };
 
 
 #if DEBUG
@@ -160,6 +179,9 @@ mainmenu:
 #if 0
 	audio_destroy(aud);
 #endif
+
+	if (js1 != NULL)
+		SDL_JoystickClose(js1);
 
 	destroy_sdl_renderer(&grend);
 	SDL_DestroyRenderer(r);

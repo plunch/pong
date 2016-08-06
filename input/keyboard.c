@@ -5,16 +5,25 @@
 static void keychange(struct keyboard_mapping* m,
                       struct input* in,
                       SDL_Keycode code,
-                      real new_input)
+		      int isdown)
 {
+	if (code == SDLK_UNKNOWN) return;
 	for(size_t i = 0; i < m->len; ++i) {
-		if (m->entries[i].keycode == code) {
-			in->input[m->entries[i].action] = new_input;
+		if (m->entries[i].pcode == code) {
+			if (!isdown && I_P(in, m->entries[i].action))
+				in->input[m->entries[i].action] = 0;
+			else
+				in->input[m->entries[i].action] = 1;
+		} else if (m->entries[i].ncode == code) {
+			if (!isdown && I_N(in, m->entries[i].action))
+				in->input[m->entries[i].action] = 0;
+			else
+				in->input[m->entries[i].action] = -1;
 		}
 	}
 }
 
-void kbinput_apply(struct keyboard_mapping* m, struct input* in, SDL_Event* e)
+static void kbinput_apply(struct keyboard_mapping* m, struct input* in, SDL_Event* e)
 {
 	switch(e->type) {
 		case SDL_KEYDOWN:

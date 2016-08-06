@@ -3,10 +3,8 @@
 
 
 #define GAMEACTIONLIST \
-	X(P1_DOWN) \
-	X(P2_DOWN) \
-	X(P1_UP) \
-	X(P2_UP)
+	X(P1_MOVEMENT) \
+	X(P2_MOVEMENT)
 
 #define X(x) GA_##x,
 enum game_action {
@@ -16,10 +14,6 @@ enum game_action {
 };
 #undef X
 
-#define X(x) #x,
-static const char* game_action_names[GAMEACTION_MAX] = {
-	GAMEACTIONLIST
-};
-#undef X
+const char* game_action_names[GAMEACTION_MAX];
 
 #endif /* GAMEACTION_H */
