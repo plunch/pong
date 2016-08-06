@@ -97,26 +97,47 @@ int main(int argc, char* argv[])
 	}
 
 	struct keyboard_mapping_entry keymap[] = {
-		/*{SDLK_w, SDLK_s, GA_P1_MOVEMENT},*/
+		{SDLK_w, SDLK_s, GA_P1_MOVEMENT},
 		{SDLK_DOWN, SDLK_UP, GA_P2_MOVEMENT},
 	};
 
-	struct joyaxis_mapping jamap[1];
+	SDL_Joystick* joys[2] = { NULL, NULL };
 
-	SDL_Joystick* js1 = SDL_JoystickOpen(0);
-	
-	SDL_JoystickID js = SDL_JoystickInstanceID(js1);
+	struct joyaxis_mapping jamap[2];
+	size_t nj = 0;
+	int njr = SDL_NumJoysticks();
+	if (njr < 0)
+		die_sdl("Get number of joysticks");
+	else
+		nj = (size_t)njr;
 
-	jamap[0].joystick = js;
-	jamap[0].axis = 1;
-	jamap[0].deadzone = 100;
-	jamap[0].action = GA_P1_MOVEMENT;
+	if (nj > 0) {
+		joys[0] = SDL_JoystickOpen(0);
 
+		if (joys[0] == NULL)
+			die_sdl("Open joystick 0");
+
+		jamap[0].joystick = SDL_JoystickInstanceID(joys[0]);
+		jamap[0].axis = 1;
+		jamap[0].deadzone = 100;
+		jamap[0].action = GA_P1_MOVEMENT;
+	}
+	if (nj > 1) {
+		joys[1] = SDL_JoystickOpen(1);
+
+		if (joys[1] == NULL)
+			die_sdl("Open joystick 1");
+
+		jamap[1].joystick = SDL_JoystickInstanceID(joys[1]);
+		jamap[1].axis = 1;
+		jamap[1].deadzone = 100;
+		jamap[1].action = GA_P2_MOVEMENT;
+	}
 
 
 	struct joystick_mapping jconf = {
-		jamap, NULL, NULL, NULL,
-		ARRAYLEN(jamap),    0,    0,    0,
+		jamap,           NULL, NULL, NULL,
+		nj > 2 ? 2 : nj, 0,    0,    0,
 	};
 
 	struct keyboard_mapping kconf = { keymap, ARRAYLEN(keymap) };
@@ -180,8 +201,11 @@ mainmenu:
 	audio_destroy(aud);
 #endif
 
-	if (js1 != NULL)
-		SDL_JoystickClose(js1);
+
+	for(size_t i = 0; i < ARRAYLEN(joys); ++i) {
+		if (joys[i] != NULL && SDL_JoystickGetAttached(joys[i]))
+			SDL_JoystickClose(joys[i]);
+	}
 
 	destroy_sdl_renderer(&grend);
 	SDL_DestroyRenderer(r);
