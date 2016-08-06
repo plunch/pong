@@ -15,7 +15,7 @@ struct joyaxis_mapping {
 
 struct joybutton_mapping {
 	SDL_JoystickID joystick;
-	Uint8 button;
+	Uint8 pbutton, nbutton;
 	enum game_action action;
 };
 

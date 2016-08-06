@@ -37,10 +37,18 @@ static void button(struct joystick_mapping* m, struct input* in, SDL_JoyButtonEv
 {
 	//fprintf(stderr, "JS: button=%i value=%i, j=%i\n", (unsigned char)e->button, e->state == SDL_PRESSED ? 1 : 0, (int)e->which);
 	for(size_t i = 0; i < m->blen; ++i) {
-		if (m->buttons[i].joystick == e->which
-		 && m->buttons[i].button == e->button) {
-			real input = e->state == SDL_PRESSED ? 1 : 0;
-			in->input[m->buttons[i].action] = input;
+		if (m->buttons[i].joystick == e->which) {
+			if (m->buttons[i].pbutton == e->button) {
+				if (e->state == SDL_RELEASED && I_P(in, m->buttons[i].action))
+					in->input[m->buttons[i].action] = 0;
+				else if (e->state == SDL_PRESSED)
+					in->input[m->buttons[i].action] = 1;
+			} else if (m->buttons[i].nbutton == e->button) {
+				if (e->state == SDL_RELEASED && I_N(in, m->buttons[i].action))
+					in->input[m->buttons[i].action] = 0;
+				else if (e->state == SDL_PRESSED)
+					in->input[m->buttons[i].action] = -1;
+			}
 		}
 	}
 }
