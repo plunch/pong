@@ -3,6 +3,14 @@
 #include <stdlib.h> /* abs */
 #include <stdio.h>
 
+static real rescale_axis(Sint16 value)
+{
+	if (value < 0)
+		return value/(real)32768;
+	else
+		return value/32767;
+}
+
 static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent* e)
 {
 #if JOY_DBG & 0x1
@@ -15,10 +23,12 @@ static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent*
 		if (m->balls[i].joystick == e->which
 		 && m->balls[i].ball == e->ball) {
 			real input;
+			// TODO: Can we even translate trackball motion
+			// to an 'axis' ?
 			if (m->balls[i].horizontal)
-				input = (real)e->xrel;
+				input = rescale_axis(e->xrel);
 			else
-				input = (real)e->yrel;
+				input = rescale_axis(e->yrel);
 
 			in->input[m->balls[i].action] = input;
 		}
@@ -38,7 +48,7 @@ static void axis(struct joystick_mapping* m, struct input* in, SDL_JoyAxisEvent*
 		 && m->axes[i].axis == e->axis) {
 			real input = 0;
 			if (m->axes[i].deadzone < abs(e->value))
-				input = (real)e->value;
+				input = rescale_axis(e->value);
 			in->input[m->axes[i].action] = input;
 		}
 	}
@@ -58,14 +68,14 @@ static void button(struct joystick_mapping* m,
 		if (m->buttons[i].joystick == e->which) {
 			if (m->buttons[i].pbutton == e->button) {
 				if (e->state == SDL_RELEASED && I_P(in, m->buttons[i].action))
-					in->input[m->buttons[i].action] = 0;
+					in->input[m->buttons[i].action] = I_ZERO;
 				else if (e->state == SDL_PRESSED)
-					in->input[m->buttons[i].action] = 1;
+					in->input[m->buttons[i].action] = I_MAX;
 			} else if (m->buttons[i].nbutton == e->button) {
 				if (e->state == SDL_RELEASED && I_N(in, m->buttons[i].action))
-					in->input[m->buttons[i].action] = 0;
+					in->input[m->buttons[i].action] = I_ZERO;
 				else if (e->state == SDL_PRESSED)
-					in->input[m->buttons[i].action] = -1;
+					in->input[m->buttons[i].action] = I_MIN;
 			}
 		}
 	}
@@ -83,11 +93,11 @@ static void hat(struct joystick_mapping* m, struct input* in,
 	for(size_t i = 0; i < m->hlen; ++i) {
 		if (m->hats[i].joystick == e->which
 		 && m->hats[i].hat == e->hat) {
-			real input = 0;
+			real input = I_ZERO;
 			if (m->hats[i].ppos == e->value)
-				input = 1;
+				input = I_MAX;
 			else if (m->hats[i].npos == e->value)
-				input = -1;
+				input = I_MIN;
 			in->input[m->hats[i].action] = input;
 		}
 	}
