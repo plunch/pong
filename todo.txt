@@ -1,8 +1,7 @@
-Render text left-aligned
-Render higlighted menu items differently
-Render text in all menus
 Fix audio output (making other audio bad)
-Mouse control in menus
 Remap buttons
+Render text left-aligned
+Render text in all menus
+Mouse control in menus
 Touchscreen support
 Localization
