@@ -1,4 +1,5 @@
 Fix audio output (making other audio bad)
+Fix input 'sticking'
 Remap buttons
 Render text left-aligned
 Render text in all menus
