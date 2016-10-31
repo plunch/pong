@@ -9,16 +9,11 @@ static void keychange(struct keyboard_mapping* m,
 {
 	if (code == SDLK_UNKNOWN) return;
 	for(size_t i = 0; i < m->len; ++i) {
-		if (m->entries[i].pcode == code) {
+		if (m->entries[i].code == code) {
 			if (!isdown && I_P(in, m->entries[i].action))
 				in->input[m->entries[i].action] = I_ZERO;
 			else
 				in->input[m->entries[i].action] = I_MAX;
-		} else if (m->entries[i].ncode == code) {
-			if (!isdown && I_N(in, m->entries[i].action))
-				in->input[m->entries[i].action] = I_ZERO;
-			else
-				in->input[m->entries[i].action] = I_MIN;
 		}
 	}
 }

@@ -3,8 +3,10 @@
 
 
 #define GAMEACTIONLIST \
-	X(P1_MOVEMENT) \
-	X(P2_MOVEMENT)
+	X(P1_MOVE_UP) \
+	X(P1_MOVE_DOWN) \
+	X(P2_MOVE_UP) \
+	X(P2_MOVE_DOWN)
 
 #define X(x) GA_##x,
 enum game_action {

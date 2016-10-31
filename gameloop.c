@@ -72,16 +72,16 @@ static enum menu_result read_input(struct scene* s, struct input* in, struct inp
 		}
 	}
 
-	if (I_P(in, GA_P1_MOVEMENT))
+	if (I_P(in, GA_P1_MOVE_DOWN))
 		s->p1.d = 1;
-	else if (I_N(in, GA_P1_MOVEMENT))
+	else if (I_P(in, GA_P1_MOVE_UP))
 		s->p1.d = -1;
 	else
 		s->p1.d = 0;
 
-	if (I_P(in, GA_P2_MOVEMENT))
+	if (I_P(in, GA_P2_MOVE_DOWN))
 		s->p2.d = 1;
-	else if (I_N(in, GA_P2_MOVEMENT))
+	else if (I_P(in, GA_P2_MOVE_UP))
 		s->p2.d = -1;
 	else
 		s->p2.d = 0;

@@ -97,13 +97,15 @@ int main(int argc, char* argv[])
 	}
 
 	struct keyboard_mapping_entry keymap[] = {
-		{SDLK_w, SDLK_s, GA_P1_MOVEMENT},
-		{SDLK_DOWN, SDLK_UP, GA_P2_MOVEMENT},
+		{SDLK_w, GA_P1_MOVE_UP},
+		{SDLK_s, GA_P1_MOVE_DOWN},
+		{SDLK_UP, GA_P2_MOVE_UP},
+		{SDLK_DOWN, GA_P2_MOVE_DOWN}
 	};
 
 	SDL_Joystick* joys[2] = { NULL, NULL };
 
-	struct joyaxis_mapping jamap[2];
+	struct joyaxis_mapping jamap[4];
 	size_t nj = 0;
 	int njr = SDL_NumJoysticks();
 	if (njr < 0)
@@ -120,7 +122,14 @@ int main(int argc, char* argv[])
 		jamap[0].joystick = SDL_JoystickInstanceID(joys[0]);
 		jamap[0].axis = 1;
 		jamap[0].deadzone = 100;
-		jamap[0].action = GA_P1_MOVEMENT;
+		jamap[0].negative = 1;
+		jamap[0].action = GA_P1_MOVE_UP;
+
+		jamap[1].joystick = jamap[0].joystick;
+		jamap[1].axis = 1;
+		jamap[1].deadzone = 100;
+		jamap[1].negative = 0;
+		jamap[1].action = GA_P1_MOVE_DOWN;
 	}
 	if (nj > 1) {
 		joys[1] = SDL_JoystickOpen(1);
@@ -128,16 +137,23 @@ int main(int argc, char* argv[])
 		if (joys[1] == NULL)
 			die_sdl("Open joystick 1");
 
-		jamap[1].joystick = SDL_JoystickInstanceID(joys[1]);
-		jamap[1].axis = 1;
-		jamap[1].deadzone = 100;
-		jamap[1].action = GA_P2_MOVEMENT;
+		jamap[2].joystick = SDL_JoystickInstanceID(joys[1]);
+		jamap[2].axis = 1;
+		jamap[2].deadzone = 100;
+		jamap[2].negative = 1;
+		jamap[2].action = GA_P2_MOVE_UP;
+
+		jamap[3].joystick = jamap[0].joystick;
+		jamap[3].axis = 1;
+		jamap[3].deadzone = 100;
+		jamap[3].negative = 0;
+		jamap[3].action = GA_P2_MOVE_DOWN;
 	}
 
 
 	struct joystick_mapping jconf = {
 		jamap,           NULL, NULL, NULL,
-		nj > 2 ? 2 : nj, 0,    0,    0,
+		nj > 2 ? 4 : nj*2, 0,    0,    0,
 	};
 
 	struct keyboard_mapping kconf = { keymap, ARRAYLEN(keymap) };

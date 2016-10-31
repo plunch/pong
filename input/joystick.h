@@ -10,26 +10,34 @@ struct joyaxis_mapping {
 	SDL_JoystickID joystick;
 	Uint8 axis;
 	Sint16 deadzone;
+	unsigned int negative : 1;
 	enum game_action action;
 };
 
 struct joybutton_mapping {
 	SDL_JoystickID joystick;
-	Uint8 pbutton, nbutton;
+	Uint8 button;
 	enum game_action action;
 };
 
 struct joyhat_mapping {
 	SDL_JoystickID joystick;
 	Uint8 hat;
-	Uint8 ppos, npos;
+	Uint8 pos;
 	enum game_action action;
+};
+
+enum joyball_direction {
+	JBD_UP,
+	JBD_DOWN,
+	JBD_LEFT,
+	JBD_RIGHT
 };
 
 struct joyball_mapping {
 	SDL_JoystickID joystick;
 	Uint8 ball;
-	unsigned int horizontal : 1;
+	enum joyball_direction direction;
 	enum game_action action;
 };
 

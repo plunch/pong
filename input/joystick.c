@@ -3,12 +3,14 @@
 #include <stdlib.h> /* abs */
 #include <stdio.h>
 
+#define NORMALIZE(x) (x < I_ZERO ? I_ZERO : (x > I_MAX ? I_MAX : x))
+
 static real rescale_axis(Sint16 value)
 {
 	if (value < 0)
 		return value/(real)32768;
 	else
-		return value/32767;
+		return value/(real)32767;
 }
 
 static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent* e)
@@ -25,12 +27,21 @@ static void ball(struct joystick_mapping* m, struct input* in, SDL_JoyBallEvent*
 			real input;
 			// TODO: Can we even translate trackball motion
 			// to an 'axis' ?
-			if (m->balls[i].horizontal)
-				input = rescale_axis(e->xrel);
-			else
-				input = rescale_axis(e->yrel);
-
-			in->input[m->balls[i].action] = input;
+			switch(m->balls[i].direction) {
+				case JBD_UP:
+					input = -rescale_axis(e->yrel);
+					break;
+				case JBD_DOWN:
+					input = rescale_axis(e->yrel);
+					break;
+				case JBD_LEFT:
+					input = -rescale_axis(e->xrel);
+					break;
+				case JBD_RIGHT:
+					input = rescale_axis(e->xrel);
+					break;
+			}
+			in->input[m->balls[i].action] = NORMALIZE(input);
 		}
 	}
 }
@@ -47,9 +58,12 @@ static void axis(struct joystick_mapping* m, struct input* in, SDL_JoyAxisEvent*
 		if (m->axes[i].joystick == e->which
 		 && m->axes[i].axis == e->axis) {
 			real input = 0;
-			if (m->axes[i].deadzone < abs(e->value))
+			if (m->axes[i].deadzone < abs(e->value)) {
 				input = rescale_axis(e->value);
-			in->input[m->axes[i].action] = input;
+				if (m->axes[i].negative)
+					input *= -1;
+			}
+			in->input[m->axes[i].action] = NORMALIZE(input);
 		}
 	}
 }
@@ -66,16 +80,11 @@ static void button(struct joystick_mapping* m,
 #endif
 	for(size_t i = 0; i < m->blen; ++i) {
 		if (m->buttons[i].joystick == e->which) {
-			if (m->buttons[i].pbutton == e->button) {
+			if (m->buttons[i].button == e->button) {
 				if (e->state == SDL_RELEASED && I_P(in, m->buttons[i].action))
 					in->input[m->buttons[i].action] = I_ZERO;
 				else if (e->state == SDL_PRESSED)
 					in->input[m->buttons[i].action] = I_MAX;
-			} else if (m->buttons[i].nbutton == e->button) {
-				if (e->state == SDL_RELEASED && I_N(in, m->buttons[i].action))
-					in->input[m->buttons[i].action] = I_ZERO;
-				else if (e->state == SDL_PRESSED)
-					in->input[m->buttons[i].action] = I_MIN;
 			}
 		}
 	}
@@ -94,10 +103,8 @@ static void hat(struct joystick_mapping* m, struct input* in,
 		if (m->hats[i].joystick == e->which
 		 && m->hats[i].hat == e->hat) {
 			real input = I_ZERO;
-			if (m->hats[i].ppos == e->value)
+			if (m->hats[i].pos == e->value)
 				input = I_MAX;
-			else if (m->hats[i].npos == e->value)
-				input = I_MIN;
 			in->input[m->hats[i].action] = input;
 		}
 	}

@@ -7,8 +7,7 @@
 #include <SDL2/SDL.h>
 
 struct keyboard_mapping_entry {
-	SDL_Keycode pcode;
-	SDL_Keycode ncode;
+	SDL_Keycode code;
 	enum game_action action;
 };
 
