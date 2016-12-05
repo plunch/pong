@@ -27,7 +27,7 @@
 
 #define llist_insert(T, head, index, value) llist__insert_##T ((head), (index), (value))
 #define llist_append(T, head, value) llist__append_##T ((head), (value))
-#define llist_prepend(T, head, value) llist__append_##T ((head), 0, (value))
+#define llist_prepend(T, head, value) llist__append_##T ((head), (value))
 #define llist_remove_at(T, head, index) llist__remove_at_##T ((head), (index))
 #define llist_movenext(T, head, state, value) llist__movenext_##T ((head), (state), (value))
 #define llist_count(T, head) llist__count_##T ((head))
