@@ -2,6 +2,11 @@
 #error "The preprocessor macro LLIST_TYPE must be defined"
 #endif
 
+#ifndef LLIST_MNAME
+#define LLIST_MNAME_UNDEFINED
+#define LLIST_MNAME LLIST_TYPE
+#endif
+
 #ifndef LLIST_ASSERT_FUNC
 #define LLIST_ASSERT_FUNC (void)
 #endif
@@ -25,19 +30,21 @@
 #define llist_prepend(T, head, value) llist__append_##T ((head), 0, (value))
 #define llist_remove_at(T, head, index) llist__remove_at_##T ((head), (index))
 #define llist_movenext(T, head, state, value) llist__movenext_##T ((head), (state), (value))
+#define llist_count(T, head) llist__count_##T ((head))
+#define llist(T) LLIST_PPCAT_NX(struct, T)
 
 #endif /* LLIST_METHODS_DEFINED */
 
-struct llist {
+struct llist(LLIST_MNAME) {
 	LLIST_TYPE value;
-	struct llist* next;
+	struct llist(LLIST_MNAME)* next;
 };
 
-static int LLIST_FUNC_NAME(insert, LLIST_TYPE)(struct llist** head, size_t index, LLIST_TYPE value)
+static int LLIST_FUNC_NAME(insert, LLIST_MNAME)(struct llist(LLIST_MNAME)** head, size_t index, LLIST_TYPE value)
 {
 	LLIST_ASSERT_FUNC(head != NULL);
 
-	struct llist* new = LLIST_MALLOC_FUNC(sizeof(struct llist));
+	struct llist(LLIST_MNAME)* new = LLIST_MALLOC_FUNC(sizeof(struct llist(LLIST_MNAME)));
 	new->value = value;
 	if (new == NULL)
 		return 0;
@@ -48,7 +55,7 @@ static int LLIST_FUNC_NAME(insert, LLIST_TYPE)(struct llist** head, size_t index
 		return 1;
 	} else {
 		size_t i = 0;
-		struct llist* current = *head;
+		struct llist(LLIST_MNAME)* current = *head;
 		while(i++ < index) {
 			LLIST_ASSERT_FUNC(current != NULL);
 			current = current->next;
@@ -60,34 +67,34 @@ static int LLIST_FUNC_NAME(insert, LLIST_TYPE)(struct llist** head, size_t index
 	}
 }
 
-static int LLIST_FUNC_NAME(append, LLIST_TYPE)(struct llist** head, LLIST_TYPE value)
+static int LLIST_FUNC_NAME(append, LLIST_MNAME)(struct llist(LLIST_MNAME)** head, LLIST_TYPE value)
 {
 	LLIST_ASSERT_FUNC(head != NULL);
 
-	struct llist* new = LLIST_MALLOC_FUNC(sizeof(struct llist));
+	struct llist(LLIST_MNAME)* new = LLIST_MALLOC_FUNC(sizeof(struct llist(LLIST_MNAME)));
 	new->next = NULL;
 	new->value = value;
 	if (new == NULL)
 		return 0;
 
 	if (*head) {
-		struct llist* current = *head;
+		struct llist(LLIST_MNAME)* current = *head;
 		while(current->next != NULL) {
 			current = current->next;
 		}
 		current->next = new;
 	} else {	
 		*head = new;
-		return 1;
 	}
+	return 1;
 }
 
-static LLIST_TYPE LLIST_FUNC_NAME(remove_at, LLIST_TYPE)(struct llist** head, size_t index)
+static LLIST_TYPE LLIST_FUNC_NAME(remove_at, LLIST_MNAME)(struct llist(LLIST_MNAME)** head, size_t index)
 {
 	LLIST_ASSERT_FUNC(head != NULL);
 
 	size_t i = 0;
-	struct llist* current = *head;
+	struct llist(LLIST_MNAME)* current = *head;
 	while(i++ < index) {
 		LLIST_ASSERT_FUNC(current != NULL);
 		current = current->next;
@@ -97,21 +104,21 @@ static LLIST_TYPE LLIST_FUNC_NAME(remove_at, LLIST_TYPE)(struct llist** head, si
 
 	LLIST_TYPE value = current->next->value;
 
-	struct llist* tmp = current->next->next;
+	struct llist(LLIST_MNAME)* tmp = current->next->next;
 	LLIST_FREE_FUNC(current->next);
 	current->next = tmp;
 
 	return value;
 }
 
-static int LLIST_FUNC_NAME(movenext, LLIST_TYPE)(const struct llist* head, void** state, LLIST_TYPE* value)
+static int LLIST_FUNC_NAME(movenext, LLIST_MNAME)(struct llist(LLIST_MNAME)* head, void** state, LLIST_TYPE* value)
 {
 	LLIST_ASSERT_FUNC(head != NULL);
 	LLIST_ASSERT_FUNC(state != NULL);
 	LLIST_ASSERT_FUNC(value != NULL);
 
 	if (*state) {
-		struct llist* old = *state;
+		const struct llist(LLIST_MNAME)* old = *state;
 		if (!old->next)
 			return 0;
 		*value = old->next->value;
@@ -128,6 +135,22 @@ static int LLIST_FUNC_NAME(movenext, LLIST_TYPE)(const struct llist* head, void*
 	}
 }
 
+static size_t LLIST_FUNC_NAME(count, LLIST_MNAME)(struct llist(LLIST_MNAME)* head)
+{
+	struct llist(LLIST_MNAME)* current = head;
+	size_t c = 0;
+	while(current != NULL) {
+		c++;
+		current = current->next;
+	}
+	return c;
+}
+
 #undef LLIST_FUNC_NAME
 #undef LLIST_PPCAT
 #undef LLIST_PPCAT
+
+#ifdef LLIST_MNAME_UNDEFINED
+#undef LLIST_MNAME_UNDEFINED
+#undef LLIST_MNAME
+#endif /* LLIST_MNAME_UNDEFINED */
