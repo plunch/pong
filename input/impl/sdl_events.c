@@ -238,6 +238,7 @@ void input_sdl_event(struct input_event_buffer* buffer, SDL_Event* e)
 	}
 
 	for(int i = 0; i < count; ++i) {
+		events[i].timestamp = e->common.timestamp;
 		input_event_buffer_push(buffer, events + i);
 	}
 }

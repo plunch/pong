@@ -22,6 +22,12 @@ int input_event_buffer_pop(struct input_event_buffer*, struct input_event*);
 int input_event_buffer_peek(struct input_event_buffer*, struct input_event*);
 int input_event_buffer_popif(struct input_event_buffer*,
 		             struct input_event*,
-			     int (*predicate)(struct input_event*));
+			     void*,
+			     int (*predicate)(void*, struct input_event*));
+size_t input_event_buffer_popwhile(struct input_event_buffer*,
+		                   struct input_event*,
+				   size_t,
+				   void*,
+			           int (*predicate)(void*, struct input_event*));
 
 #endif /* EVENT_BUFFER_H */

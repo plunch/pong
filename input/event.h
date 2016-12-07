@@ -4,6 +4,7 @@
 #include "value.h"
 
 struct input_event {
+	unsigned timestamp;
 	struct input_source_id id;
 	struct input_value value;
 };
