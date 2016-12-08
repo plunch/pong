@@ -6,9 +6,11 @@
 #include "simulation.h"
 #include "scenerender.h"
 
-#include "input.h"
-#include "inputsource_sdl.h"
-#include "input/keyboard.h"
+/*#include "input.h"*/
+/*#include "inputsource_sdl.h"*/
+/*#include "input/keyboard.h"*/
+
+#include "input/impl/sdl.h"
 
 #include "audioproxy.h"
 #include "menus/winmenu.h"

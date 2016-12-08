@@ -1,3 +1,4 @@
+#include "sdl.h"
 #include "input/event.h"
 #include "input/event_buffer.h"
 
