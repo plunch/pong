@@ -3,12 +3,7 @@
 
 #include "value.h"
 #include "event.h"
-
-struct input_mapping {
-	struct input_source_id source;
-	unsigned intent;
-	struct input_value last_value;
-};
+#include "mapping.h"
 
 struct input_intent_value {
 	real axis;
