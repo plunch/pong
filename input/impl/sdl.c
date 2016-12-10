@@ -4,12 +4,13 @@
 
 #include <SDL2/SDL.h>
 
-#define SRC_KEYBOARD 0
-#define SRC_MOUSE 1
-#define SRC_JBALL 2
-#define SRC_JAXIS 3
-#define SRC_JBUTTON 4
-#define SRC_JHAT 5
+#define SRC_KEYBOARD_S 0
+#define SRC_KEYBOARD_K 1
+#define SRC_MOUSE 2
+#define SRC_JBALL 3
+#define SRC_JAXIS 4
+#define SRC_JBUTTON 5
+#define SRC_JHAT 6
 
 #define WHC_MOUSE_WHEEL_X 0
 #define WHC_MOUSE_WHEEL_Y 1
@@ -22,9 +23,15 @@
 #define WHC_MOUSE_B2 8
 
 
-struct input_source_id input_sdl_keyid(SDL_Scancode code)
+struct input_source_id input_sdl_scancode(SDL_Scancode code)
 {
-	struct input_source_id ret = { 0, code, 0 };
+	struct input_source_id ret = { SRC_KEYBOARD_S, code, 0 };
+	return ret;
+}
+
+struct input_source_id input_sdl_keycode(SDL_Keycode code)
+{
+	struct input_source_id ret = { SRC_KEYBOARD_K, code, 0 };
 	return ret;
 }
 
@@ -144,7 +151,7 @@ static int mmotion(struct input_event* events, SDL_MouseMotionEvent* e)
 
 static int key(struct input_event* events, SDL_KeyboardEvent* e)
 {
-	events[0].id.source = SRC_KEYBOARD;
+	events[0].id.source = SRC_KEYBOARD_S;
 	events[0].id.which = e->keysym.scancode;
 	events[0].id.device = 0;
 	events[0].value.type = IET_KEY;
@@ -155,7 +162,19 @@ static int key(struct input_event* events, SDL_KeyboardEvent* e)
 	} else {
 		events[0].value.as.key = KEY_RELEASED;
 	}
-	return 1;
+
+	events[1].id.source = SRC_KEYBOARD_K;
+	events[1].id.which = e->keysym.sym;
+	events[1].id.device = 0;
+	events[1].value.type = IET_KEY;
+	if (e->state == SDL_PRESSED) {
+		events[1].value.as.key = KEY_PRESSED;
+		if (e->repeat)
+			events[1].value.as.key = KEY_STATE_DOWN;
+	} else {
+		events[1].value.as.key = KEY_RELEASED;
+	}
+	return 2;
 }
 
 static int ball(struct input_event* events, SDL_JoyBallEvent* e)

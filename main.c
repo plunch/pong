@@ -107,52 +107,52 @@ int main(int argc, char* argv[])
 	pllist_append(&input.contexts, &menu_ctx);
 
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_UP),
+	                        input_sdl_keycode(SDLK_UP),
 				ACT_UP);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_W),
+	                        input_sdl_scancode(SDL_SCANCODE_W),
 				ACT_UP);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_DOWN),
+	                        input_sdl_keycode(SDLK_DOWN),
 				ACT_DOWN);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_S),
+	                        input_sdl_scancode(SDL_SCANCODE_S),
 				ACT_DOWN);
 
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_LEFT),
+	                        input_sdl_keycode(SDLK_LEFT),
 				ACT_LEFT);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_A),
+	                        input_sdl_scancode(SDL_SCANCODE_A),
 				ACT_LEFT);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_RIGHT),
+	                        input_sdl_keycode(SDLK_RIGHT),
 				ACT_RIGHT);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_D),
+	                        input_sdl_scancode(SDL_SCANCODE_D),
 				ACT_RIGHT);
 
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_RETURN),
+	                        input_sdl_keycode(SDLK_RETURN),
 				ACT_CONFIRM);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_RETURN2),
+	                        input_sdl_keycode(SDLK_RETURN2),
 				ACT_CONFIRM);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_KP_ENTER),
+	                        input_sdl_keycode(SDLK_KP_ENTER),
 				ACT_CONFIRM);
 
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_BACKSPACE),
+	                        input_sdl_keycode(SDLK_BACKSPACE),
 				ACT_BACK);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_KP_BACKSPACE),
+	                        input_sdl_keycode(SDLK_KP_BACKSPACE),
 				ACT_BACK);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_ESCAPE),
+	                        input_sdl_keycode(SDLK_ESCAPE),
 				ACT_BACK);
 	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keyid(SDL_SCANCODE_CANCEL),
+	                        input_sdl_keycode(SDLK_CANCEL),
 				ACT_BACK);
 
 
