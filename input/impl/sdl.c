@@ -22,6 +22,12 @@
 #define WHC_MOUSE_B2 8
 
 
+struct input_source_id input_sdl_keyid(SDL_Scancode code)
+{
+	struct input_source_id ret = { 0, code, 0 };
+	return ret;
+}
+
 
 static real rescale_axis(Sint16 value)
 {

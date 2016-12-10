@@ -10,6 +10,8 @@
 #include "audio.h"
 #include "audioproxy.h"
 
+#include "input/impl/sdl.h"
+
 #include "menus/mainmenu.h"
 #include "menus/options.h"
 
@@ -17,7 +19,17 @@
 
 #include <SDL2/SDL.h>
 
-static enum menu_result game(struct renderer* re, struct inputsourcelist* sources)
+
+enum high_state {
+	ST_INGAME,
+	ST_MAINMENU,
+	ST_OPTIONSMENU,
+	ST_QUITTING,
+};
+
+static enum menu_result game(struct renderer* re,
+                             struct input_kernel* k,
+                             struct input_context* m)
 {
 	struct scene s;
 	
@@ -44,7 +56,7 @@ static enum menu_result game(struct renderer* re, struct inputsourcelist* source
 	s.p2.s = 6;
 	s.p2.d = 0;
 
-	return main_loop(re, &s, sources);
+	return main_loop(re, &s, k, m);
 }
 
 int main(int argc, char* argv[])
@@ -86,20 +98,64 @@ int main(int argc, char* argv[])
 	struct renderer grend = RENDER_EMPTY;
 	create_sdl_renderer(&grend, w, r, &asciifont);
 
-	struct input_kernel input { NULL };
+	struct input_kernel input = { NULL };
 	struct input_context menu_ctx = {
 		{0, NULL, 0, NULL},
 		0,
 		"Menu"
 	};
-	pllist_append(&input.contexts, &input);
+	pllist_append(&input.contexts, &menu_ctx);
+
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_UP),
+				ACT_UP);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_W),
+				ACT_UP);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_DOWN),
+				ACT_DOWN);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_S),
+				ACT_DOWN);
+
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_LEFT),
+				ACT_LEFT);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_A),
+				ACT_LEFT);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_RIGHT),
+				ACT_RIGHT);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_D),
+				ACT_RIGHT);
+
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_RETURN),
+				ACT_CONFIRM);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_RETURN2),
+				ACT_CONFIRM);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_KP_ENTER),
+				ACT_CONFIRM);
+
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_BACKSPACE),
+				ACT_BACK);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_KP_BACKSPACE),
+				ACT_BACK);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_ESCAPE),
+				ACT_BACK);
+	input_state_add_mapping(&menu_ctx.state,
+	                        input_sdl_keyid(SDL_SCANCODE_CANCEL),
+				ACT_BACK);
 
 
-
-	struct menu mainmen;
-	if (!(create_menu(&mainmen, &grend, &menu_ctx.state) && create_mainmenu(&mainmen))) {
-		die("Create main menu");
-	}
 
 #if 0
 	struct keyboard_mapping_entry keymap[] = {
@@ -191,6 +247,7 @@ int main(int argc, char* argv[])
 
 	SDL_ShowWindow(w);
 
+	/*
 mainmenu:
 	switch(run_menu(&mainmen)) {
 		case MNU_FORWARD:
@@ -211,16 +268,89 @@ mainmenu:
 				}
 
 				enum menu_result optres = run_menu(&opt);
-				destroy_optionsmenu(&opt);
 				if (optres == MNU_QUIT)
 					break;
 			}
 		default:
 			goto mainmenu;
 	}
+	*/
 
+	struct menu mainmen;
+	if (!(create_menu(&mainmen, &grend, &menu_ctx.state)
+	   && create_mainmenu(&mainmen)))
+		die("Create main menu");
+
+	struct menu opt;
+	if (!(create_menu(&opt, &grend, &menu_ctx.state)
+	   && create_optionsmenu(&opt)))
+	   	die("Create options menu");
+
+	struct input_event_buffer events;
+	if (!input_event_buffer_init(&events))
+		die("Create input event buffer");
+
+	input_state_reset(&menu_ctx.state);
+
+	enum high_state st = ST_MAINMENU;
+	while(st != ST_QUITTING) {
+		SDL_Event e;
+		while(SDL_PollEvent(&e)) {
+			input_sdl_event(&events, &e);
+
+			switch(e.type) {
+				case SDL_QUIT:
+					return MNU_QUIT;
+			}
+		}
+
+		input_state_step(&menu_ctx.state);
+		input_kernel_consume(&input, &events, SDL_GetTicks());
+
+		switch(st) {
+			case ST_QUITTING: break;
+			case ST_MAINMENU:
+				menu_ctx.active = 1;
+				switch(run_menu(&mainmen)) {
+					case MNU_FORWARD:
+						st = ST_INGAME;
+						continue;
+					case MNU_QUIT:
+					case MNU_BACK:
+						st = ST_QUITTING;
+						continue;
+					case MNU_OPT1:
+						st = ST_OPTIONSMENU;
+						continue;
+					default:
+						break;
+				}
+				break;
+			case ST_INGAME:
+				menu_ctx.active = 0;
+				if (game(&grend, &input, &menu_ctx) == MNU_QUIT) {
+					st = ST_QUITTING;
+					continue;
+				}
+				break;
+			case ST_OPTIONSMENU:
+				menu_ctx.active = 1;
+				switch(run_menu(&mainmen)) {
+					case MNU_QUIT:
+						st = ST_QUITTING;
+						continue;
+					case MNU_NONE:
+						break;
+					default:
+						st = ST_MAINMENU;
+						continue;
+				}
+		}
+	}
 
 	destroy_mainmenu(&mainmen);
+	destroy_optionsmenu(&opt);
+
 
 #if 0
 	audio_destroy(aud);
@@ -239,3 +369,4 @@ mainmenu:
 	SDL_DestroyWindow(w);
 	SDL_Quit();
 }
+

@@ -10,7 +10,7 @@
 #define MINT_RIGHT 3
 #define MINT_CONFIRM 4
 #define MINT_BACK 5
-#define MINT_USER_START 6
+#define MINT_USER_START 7
 
 enum action {
 	ACT_NONE,

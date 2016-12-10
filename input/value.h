@@ -45,6 +45,9 @@ struct input_source_id {
 	unsigned int device;
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 static int input_source_id_equals(struct input_source_id* a,
                                   struct input_source_id* b)
 {
@@ -52,6 +55,8 @@ static int input_source_id_equals(struct input_source_id* a,
 	     && a->which == b->which
 	    && a->device == b->device;
 }
+
+#pragma GCC diagnostic pop
 
 real input_value_as_axis(const struct input_value*,
                          const struct input_value*);

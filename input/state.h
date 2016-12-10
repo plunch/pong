@@ -32,6 +32,7 @@ void input_state_release(struct input_state*);
 
 
 void input_state_reset(struct input_state*);
+void input_state_step(struct input_state*);
 int input_state_apply_event(struct input_state*, struct input_event*);
 
 #endif /* INPUT_STATE_H */

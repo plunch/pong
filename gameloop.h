@@ -14,6 +14,7 @@
 
 enum menu_result main_loop(struct renderer*,
                            struct scene*,
-                           struct input_kernel*);
+                           struct input_kernel*,
+			   struct input_context*);
 
 #endif /* GLOOP_H */

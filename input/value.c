@@ -126,8 +126,8 @@ int input_value_as_relative(const struct input_value* value,
 			         ? KEY_2_RELATIVE
 			         : 0;
 		case IET_AXIS:
-			return lrint_real(AXIS_2_RELATIVE_SCALE 
-			                   * value->as.axis);
+			return (int)lrint_real(AXIS_2_RELATIVE_SCALE 
+			                       * value->as.axis);
 		case IET_RELATIVE:
 			return value->as.relative;
 		default:

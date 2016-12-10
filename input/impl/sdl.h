@@ -7,4 +7,6 @@
 
 void input_sdl_event(struct input_event_buffer*, SDL_Event*);
 
+struct input_source_id input_sdl_keyid(SDL_Scancode);
+
 #endif /* INPUT_IMPL_SDL_H */

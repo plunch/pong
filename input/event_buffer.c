@@ -7,6 +7,7 @@ int input_event_buffer_init(struct input_event_buffer* buffer)
 {
 	assert(buffer != NULL);
 	buffer->start = 0;
+	buffer->size = 0;
 
 	buffer->mut = mutex_create();
 
