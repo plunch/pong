@@ -3,6 +3,13 @@
 
 #include "event_buffer.h"
 #include "util/ptrllist.h"
+#include "state.h"
+
+struct input_context {
+	struct input_state state;
+	int active;
+	const char* name;
+};
 
 struct input_kernel {
 	pllist* contexts;

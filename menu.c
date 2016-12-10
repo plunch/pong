@@ -37,11 +37,16 @@ enum menu_result run_menu(struct menu* m)
 {
 	assert(m != NULL && m->paint != NULL && m->action != NULL);
 
-	SDL_Event e;
+	//SDL_Event e;
 	enum action a = ACT_NONE;
 	enum menu_result res = MNU_NONE;
 	while(res == MNU_NONE) {
 		a = ACT_NONE;
+		for(int i = 0; i < MINT_USER_START; ++i) {
+			if (m->input->values[i].key & KEY_RISING_EDGE)
+				a = i;
+		}
+		/*
 		while(SDL_PollEvent(&e)) {
 			switch (e.type) {
 				case SDL_QUIT:
@@ -52,6 +57,7 @@ enum menu_result run_menu(struct menu* m)
 					break;
 			}
 		}
+		*/
 
 		res = m->action(m->userdata, a);
 
@@ -64,9 +70,12 @@ enum menu_result run_menu(struct menu* m)
 	return res;
 }
 
-int create_menu(struct menu* m, struct renderer* r)
+int create_menu(struct menu* m, struct renderer* r, struct input_state* i)
 {
 	m->renderer = r;
+	m->input = i;
+	if (!input_state_resize(i, MINT_USER_START-1))
+		return 0;
 	return 1;
 }
 

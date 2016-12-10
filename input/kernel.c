@@ -21,15 +21,16 @@ void input_kernel_consume(struct input_kernel* kernel,
 	                                         BUFZ,
 	                                         &ts,
 	                                         event_is_before);
-	struct input_state* cstate;
+	struct input_context* cstate;
 	void* current;
 	void* state;
 	for (size_t i = 0; i < len; ++i) {
 		state = NULL;
 		while(pllist_movenext(kernel->contexts, &state, &current)) {
 			cstate = current;
-			if (cstate != NULL 
-			    && input_state_apply_event(cstate, events + i))
+			if (cstate != NULL && cstate->active
+			    && input_state_apply_event(&cstate->state,
+			                               events + i))
 				break;
 		}
 	}

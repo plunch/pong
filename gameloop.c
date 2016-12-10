@@ -6,10 +6,12 @@
 #include "simulation.h"
 #include "scenerender.h"
 
+
 /*#include "input.h"*/
 /*#include "inputsource_sdl.h"*/
 /*#include "input/keyboard.h"*/
 
+#include "gameaction.h"
 #include "input/impl/sdl.h"
 
 #include "audioproxy.h"
@@ -19,71 +21,33 @@
 #include <stdbool.h>
 #include <assert.h>
 
-static enum menu_result read_input(struct scene* s, struct input* in, struct inputsourcelist* conf) {
+static enum menu_result read_input(struct scene* s,
+                                   struct input_kernel* kern,
+				   struct input_state* input,
+                                   struct input_event_buffer* events)
+{
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
-		inputsource_apply(conf, in, &e);
+		input_sdl_event(events, &e);
 
 		switch(e.type) {
 			case SDL_QUIT:
 				return MNU_QUIT;
-			case SDL_KEYUP:
-				switch(e.key.keysym.sym) {
-					case SDLK_BACKSPACE:
-					case SDLK_KP_BACKSPACE:
-					case SDLK_ESCAPE:
-					case SDLK_CANCEL:
-						return MNU_BACK;
-				}
-				break;
-				/*
-			case SDL_KEYDOWN:
-				switch(e.key.keysym.sym) {
-					case SDLK_w:
-						s->p1.d = -1;
-						break;
-					case SDLK_s:
-						s->p1.d = 1;
-						break;
-					case SDLK_UP:
-						s->p2.d = -1;
-						break;
-					case SDLK_DOWN:
-						s->p2.d = 1;
-						break;
-				}
-				break;	
-			case SDL_KEYUP:
-				switch(e.key.keysym.sym) {
-					case SDLK_w:
-					case SDLK_s:
-						s->p1.d = 0;
-						break;
-					case SDLK_UP:
-					case SDLK_DOWN:
-						s->p2.d = 0;
-						break;
-					case SDLK_BACKSPACE:
-					case SDLK_KP_BACKSPACE:
-					case SDLK_ESCAPE:
-					case SDLK_CANCEL:
-						return MNU_BACK;
-				}
-				break;
-				*/
 		}
 	}
 
-	if (I_P(in, GA_P1_MOVE_DOWN))
+	input_kernel_consume(kern, events, SDL_GetTicks());
+
+	if (input->values[GA_P1_MOVE_DOWN].key & KEY_STATE_DOWN)
 		s->p1.d = 1;
-	else if (I_P(in, GA_P1_MOVE_UP))
+	else if (input->values[GA_P1_MOVE_UP].key & KEY_STATE_DOWN)
 		s->p1.d = -1;
 	else
 		s->p1.d = 0;
 
-	if (I_P(in, GA_P2_MOVE_DOWN))
+	if (input->values[GA_P2_MOVE_DOWN].key & KEY_STATE_DOWN)
 		s->p2.d = 1;
-	else if (I_P(in, GA_P2_MOVE_UP))
+	else if (input->values[GA_P2_MOVE_UP].key & KEY_STATE_DOWN)
 		s->p2.d = -1;
 	else
 		s->p2.d = 0;
@@ -93,25 +57,49 @@ static enum menu_result read_input(struct scene* s, struct input* in, struct inp
 
 enum menu_result main_loop(struct renderer* r,
                            struct scene* s,
-                           struct inputsourcelist* config)
+                           struct input_kernel* input)
 {
 	enum menu_result retval = MNU_NONE;
 
 	struct menu men;
-	struct input in = { .input={ 0 } };
 
 	struct render_item* paddle1 = ri_load(r, "paddle1");
 	struct render_item* paddle2 = ri_load(r, "paddle2");
 	struct render_item* ball = ri_load(r, "ball");
 	struct render_item* field = ri_load(r, "field");
 
+	struct input_context menu_context = {
+		{0, NULL, 0, NULL},
+		0,
+		"Menu",
+	};
+
+	struct input_context game_context = {
+		{0, NULL, 0, NULL},
+		0,
+		"Game",
+	};
+
+	input_state_create(&game_context.state, GAMEACTION_MAX);
+
+	pllist_append(&input->contexts, &game_context);
+	pllist_append(&input->contexts, &menu_context);
+
+	struct input_event_buffer input_buffer;
+	if (!input_event_buffer_init(&input_buffer)) {
+		perror("Allocate event buffer");
+		return MNU_QUIT;
+	}
+
 	uint32_t next_tick = SDL_GetTicks();
 	while(1) {
 		unsigned int loops = 0;
 		while(SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
-			switch (read_input(s, &in, config)) {
+			switch (read_input(s, input,
+			                   &game_context.state, &input_buffer)) {
 				case MNU_QUIT:
-					if (!(create_menu(&men, r) && create_quitmenu(&men))) {
+					if (!(create_menu(&men, r, &menu_context.state)
+					   && create_quitmenu(&men))) {
 						perror("Create quit menu");
 						return MNU_QUIT;
 					}
@@ -132,9 +120,10 @@ enum menu_result main_loop(struct renderer* r,
 					break;
 			}
 
-			int winner = step_simulation(s);
+			int winner = step_simulation(s, 1);
 			if (winner >= 0) {
-				if (!(create_menu(&men, r) && create_winmenu(&men, winner))) {
+				if (!(create_menu(&men, r, &menu_context.state) 
+				   && create_winmenu(&men, winner))) {
 					perror("Create win menu");
 					retval = MNU_QUIT;
 					goto exit;
@@ -157,6 +146,7 @@ enum menu_result main_loop(struct renderer* r,
 	}
 
 exit:
+	input_event_buffer_free(&input_buffer);
 	ri_destroy(r, paddle1);
 	ri_destroy(r, paddle2);
 	ri_destroy(r, ball);

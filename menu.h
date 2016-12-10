@@ -2,6 +2,7 @@
 #define MENU_H
 
 #include "render.h"
+#include "input/state.h"
 
 #include <SDL2/SDL.h>
 
@@ -20,6 +21,6 @@ struct menu;
 
 enum menu_result run_menu(struct menu*);
 
-int create_menu(struct menu*, struct renderer*);
+int create_menu(struct menu*, struct renderer*, struct input_state*);
 
 #endif /* MENU_H */

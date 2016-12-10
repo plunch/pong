@@ -10,10 +10,6 @@
 #include "audio.h"
 #include "audioproxy.h"
 
-#include "inputsource_sdl.h"
-#include "input/keyboard.h"
-#include "input/joystick.h"
-
 #include "menus/mainmenu.h"
 #include "menus/options.h"
 
@@ -90,12 +86,22 @@ int main(int argc, char* argv[])
 	struct renderer grend = RENDER_EMPTY;
 	create_sdl_renderer(&grend, w, r, &asciifont);
 
+	struct input_kernel input { NULL };
+	struct input_context menu_ctx = {
+		{0, NULL, 0, NULL},
+		0,
+		"Menu"
+	};
+	pllist_append(&input.contexts, &input);
+
+
 
 	struct menu mainmen;
-	if (!(create_menu(&mainmen, &grend) && create_mainmenu(&mainmen))) {
+	if (!(create_menu(&mainmen, &grend, &menu_ctx.state) && create_mainmenu(&mainmen))) {
 		die("Create main menu");
 	}
 
+#if 0
 	struct keyboard_mapping_entry keymap[] = {
 		{SDLK_w, GA_P1_MOVE_UP},
 		{SDLK_s, GA_P1_MOVE_DOWN},
@@ -167,6 +173,8 @@ int main(int argc, char* argv[])
 	// to be able too dynamically add and remove inputs
 	struct inputsourcelist inplist = { input, ARRAYLEN(input) };
 
+#endif
+
 
 #if DEBUG
 	/* Clear screen sky blue.
@@ -195,7 +203,8 @@ mainmenu:
 		case MNU_OPT1:
 			{
 				struct menu opt;
-				if (!(create_menu(&opt, &grend) && create_optionsmenu(&opt))) {
+				if (!(create_menu(&opt, &grend, &menu_ctx.state)
+				   && create_optionsmenu(&opt))) {
 					// Abort
 					error("Allocate options menu");
 					break;
@@ -218,10 +227,12 @@ mainmenu:
 #endif
 
 
+#if 0
 	for(size_t i = 0; i < ARRAYLEN(joys); ++i) {
 		if (joys[i] != NULL && SDL_JoystickGetAttached(joys[i]))
 			SDL_JoystickClose(joys[i]);
 	}
+#endif
 
 	destroy_sdl_renderer(&grend);
 	SDL_DestroyRenderer(r);

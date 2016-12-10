@@ -4,8 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include "simulation.h"
-#include "input.h"
-#include "inputsource_sdl.h"
+#include "input/kernel.h"
 #include "menu.h"
 #include "render.h"
 
@@ -13,6 +12,8 @@
 #define SKIP_TICKS (1000 / 60)
 #define MAX_FRAMESKIP 1
 
-enum menu_result main_loop(struct renderer*, struct scene*, struct inputsourcelist*);
+enum menu_result main_loop(struct renderer*,
+                           struct scene*,
+                           struct input_kernel*);
 
 #endif /* GLOOP_H */

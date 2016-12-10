@@ -17,6 +17,20 @@ int input_state_create(struct input_state* state, unsigned intents)
 	return 1;
 }
 
+int input_state_resize(struct input_state* state, unsigned intents)
+{
+	assert(state != NULL);
+	if (state->max_intent > intents) return 1;
+
+	state->max_intent = intents;
+	void* p = realloc(state->values,
+	                  sizeof(struct input_value) * intents);
+	if (p == NULL)
+		return 0;
+	state->values = p;
+	return 1;
+}
+
 void input_state_release(struct input_state* state)
 {
 	assert(state != NULL);

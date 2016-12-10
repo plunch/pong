@@ -10,21 +10,21 @@
                                                        || y1 + h1 < y2 \
                                                        || y2 + h2 < y1)
 
-int step_simulation(struct scene* s)
+int step_simulation(struct scene* s, real dt)
 {
-	s->b.x += s->b.dx;
-	s->b.y += s->b.dy;
+	s->b.x += s->b.dx * dt;
+	s->b.y += s->b.dy * dt;
 
 	if (s->p1.d == 1) {
-		if (s->p1.y + s->p1.width < s->h) s->p1.y += s->p1.s;
+		if (s->p1.y + s->p1.width < s->h) s->p1.y += s->p1.s * dt;
 	} else if (s->p1.d == -1) {
-		if (s->p1.y > 0) s->p1.y -= s->p1.s;
+		if (s->p1.y > 0) s->p1.y -= s->p1.s * dt;
 	}
 
 	if (s->p2.d == 1) {
-		if (s->p2.y + s->p2.width < s->h) s->p2.y += s->p2.s;
+		if (s->p2.y + s->p2.width < s->h) s->p2.y += s->p2.s * dt;
 	} else if (s->p2.d == -1) {
-		if (s->p2.y >0) s->p2.y -= s->p2.s;
+		if (s->p2.y >0) s->p2.y -= s->p2.s * dt;
 	}
 	
 	
@@ -47,7 +47,7 @@ int step_simulation(struct scene* s)
 		 || (diffnorm > 0 && s->p2.d > 0))
 			perc = YCOORDACCELLSAME;
 
-		s->b.dy += (diffnorm * perc) * s->b.dx;
+		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
 
 		play_paddle_hit();
 	}
@@ -71,7 +71,7 @@ int step_simulation(struct scene* s)
 		 || (diffnorm > 0 && s->p1.d > 0))
 			perc = YCOORDACCELLSAME;
 
-		s->b.dy += (diffnorm * perc) * s->b.dx;
+		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
 
 		play_paddle_hit();
 	}

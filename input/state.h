@@ -19,6 +19,7 @@ struct input_state {
 };
 
 int input_state_create(struct input_state*, unsigned intents);
+int input_state_resize(struct input_state*, unsigned intents);
 int input_state_add_mapping(struct input_state*,
                             struct input_source_id,
                             unsigned);

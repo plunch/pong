@@ -28,11 +28,11 @@ struct paddle {
 struct scene {
 	real w, h;
 	unsigned int p1pt, p2pt;
-	int bs;
+	real bs;
 	struct ball b;
 	struct paddle p1, p2;
 };
 
-int step_simulation(struct scene*);
+int step_simulation(struct scene*, real);
 
 #endif /* SIM_H */
