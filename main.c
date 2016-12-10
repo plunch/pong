@@ -328,14 +328,21 @@ mainmenu:
 				break;
 			case ST_INGAME:
 				menu_ctx.active = 0;
-				if (game(&grend, &input, &menu_ctx) == MNU_QUIT) {
-					st = ST_QUITTING;
-					continue;
+				switch(game(&grend, &input, &menu_ctx)) {
+					case MNU_QUIT:
+						st = ST_QUITTING;
+						continue;
+					case MNU_BACK:
+						st = ST_MAINMENU;
+						input_state_reset(&menu_ctx.state);
+						continue;
+					default:
+						break;
 				}
 				break;
 			case ST_OPTIONSMENU:
 				menu_ctx.active = 1;
-				switch(run_menu(&mainmen)) {
+				switch(run_menu(&opt)) {
 					case MNU_QUIT:
 						st = ST_QUITTING;
 						continue;
@@ -364,6 +371,8 @@ mainmenu:
 	}
 #endif
 
+	pllist_clear(&input.contexts);
+	input_state_release(&menu_ctx.state);
 	destroy_sdl_renderer(&grend);
 	SDL_DestroyRenderer(r);
 	SDL_DestroyWindow(w);

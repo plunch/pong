@@ -21,6 +21,8 @@
 #include <stdbool.h>
 #include <assert.h>
 
+#define BACK_INTENT GAMEACTION_MAX
+
 enum game_state {
 	GAME_RUNNING,
 	GAME_PAUSED,
@@ -55,6 +57,9 @@ static enum menu_result read_input(struct scene* s,
 	if (res == MNU_QUIT)
 		return res;
 
+	if (input->values[BACK_INTENT].key & KEY_RISING_EDGE)
+		return MNU_BACK;
+
 	if (input->values[GA_P1_MOVE_DOWN].key & KEY_STATE_DOWN)
 		s->p1.d = 1;
 	else if (input->values[GA_P1_MOVE_UP].key & KEY_STATE_DOWN)
@@ -88,11 +93,28 @@ enum menu_result main_loop(struct renderer* r,
 
 	struct input_context game_context = {
 		{0, NULL, 0, NULL},
-		0,
+		1,
 		"Game",
 	};
 
-	input_state_create(&game_context.state, GAMEACTION_MAX);
+	input_state_create(&game_context.state, GAMEACTION_MAX+1);
+
+	input_state_add_mapping(&game_context.state,
+                        	input_sdl_keycode(SDLK_ESCAPE),
+				BACK_INTENT);
+	input_state_add_mapping(&game_context.state,
+                        	input_sdl_scancode(SDL_SCANCODE_W),
+				GA_P1_MOVE_UP);
+	input_state_add_mapping(&game_context.state,
+                        	input_sdl_scancode(SDL_SCANCODE_S),
+				GA_P1_MOVE_DOWN);
+	input_state_add_mapping(&game_context.state,
+                        	input_sdl_keycode(SDLK_UP),
+				GA_P2_MOVE_UP);
+	input_state_add_mapping(&game_context.state,
+                        	input_sdl_keycode(SDLK_DOWN),
+				GA_P2_MOVE_DOWN);
+
 
 	pllist_append(&input->contexts, &game_context);
 	pllist_append(&input->contexts, menu_context);
@@ -202,6 +224,9 @@ enum menu_result main_loop(struct renderer* r,
 
 exit:
 	input_event_buffer_free(&input_buffer);
+	pllist_remove(&input->contexts, &game_context);
+	pllist_remove(&input->contexts, menu_context);
+	input_state_release(&game_context.state);
 	ri_destroy(r, paddle1);
 	ri_destroy(r, paddle2);
 	ri_destroy(r, ball);

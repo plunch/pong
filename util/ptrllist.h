@@ -14,8 +14,12 @@ int pllist_prepend(pllist** head, void* value);
 
 void* pllist_remove_at(pllist** head, size_t index);
 
+int pllist_remove(pllist** head, void* value);
+
 int pllist_movenext(pllist* head, void** state, void** value);
 
 size_t pllist_count(pllist* head);
+
+size_t pllist_clear(pllist** head);
 
 #endif /* UTIL_PTRLLIST_H */

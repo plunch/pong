@@ -29,6 +29,7 @@
 #define llist_append(T, head, value) llist__append_##T ((head), (value))
 #define llist_prepend(T, head, value) llist__append_##T ((head), (value))
 #define llist_remove_at(T, head, index) llist__remove_at_##T ((head), (index))
+#define llist_remove(T, head, value) llist__remove_##T ((head), (value))
 #define llist_movenext(T, head, state, value) llist__movenext_##T ((head), (state), (value))
 #define llist_count(T, head) llist__count_##T ((head))
 #define llist(T) LLIST_PPCAT_NX(struct, T)
@@ -111,6 +112,27 @@ static LLIST_TYPE LLIST_FUNC_NAME(remove_at, LLIST_MNAME)(struct llist(LLIST_MNA
 	return value;
 }
 
+static int LLIST_FUNC_NAME(remove, LLIST_MNAME)(struct llist(LLIST_MNAME)** head, LLIST_TYPE value)
+{
+	LLIST_ASSERT_FUNC(head != NULL);
+
+	struct llist(LLIST_MNAME)* current = *head;
+	struct llist(LLIST_MNAME)* prev = NULL;
+	while(current != NULL) {
+		if (current->value == value) {
+			if (prev != NULL)
+				prev->next = current->next;
+			else
+				*head = current->next;
+			LLIST_FREE_FUNC(current);
+			return 1;
+		}
+		prev = current;
+		current = current->next;
+	}
+	return 0;
+}
+
 static int LLIST_FUNC_NAME(movenext, LLIST_MNAME)(struct llist(LLIST_MNAME)* head, void** state, LLIST_TYPE* value)
 {
 	LLIST_ASSERT_FUNC(head != NULL);
@@ -143,6 +165,21 @@ static size_t LLIST_FUNC_NAME(count, LLIST_MNAME)(struct llist(LLIST_MNAME)* hea
 		c++;
 		current = current->next;
 	}
+	return c;
+}
+
+static size_t LLIST_FUNC_NAME(clear, LLIST_MNAME)(struct llist(LLIST_MNAME)** head)
+{
+	struct llist(LLIST_MNAME)* current = head;
+	struct llist(LLIST_MNAME)* prev = NULL;
+	size_t c = 0;
+	while(current != NULL) {
+		c++;
+		prev = current;
+		current = current->next;
+		LLIST_FREE_FUNC(prev);
+	}
+	head = NULL;
 	return c;
 }
 

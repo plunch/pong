@@ -34,12 +34,22 @@ void* pllist_remove_at(pllist** head, size_t index)
 	return llist_remove_at(voidptrlist, head, index);
 }
 
+int pllist_remove(pllist** head, void* value)
+{
+	return llist_remove(voidptrlist, head, value);
+}
+
 int pllist_movenext(pllist* head, void** state, void** value)
 {
 	return llist_movenext(voidptrlist, head, state, value);
 }
 
 size_t pllist_count(pllist* head)
+{
+	return llist_count(voidptrlist, head);
+}
+
+size_t pllist_clear(pllist** head)
 {
 	return llist_count(voidptrlist, head);
 }
