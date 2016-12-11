@@ -94,7 +94,8 @@ int input_state_apply_event(struct input_state* state, struct input_event* e)
 	assert(e != NULL);
 
 	for(unsigned i = 0; i < state->num_mappings; ++i) {
-		if (input_source_id_equals(&e->id, &state->mappings[i].source)) {
+		if (input_source_id_equals(&e->id,
+		                           &state->mappings[i].source)) {
 #if 0
 			printf("Applied a ");
 			print_input_value(e->value);
@@ -116,7 +117,8 @@ int input_state_add_mapping(struct input_state* state,
 	assert(state != NULL);
 
 	void* ptr = realloc(state->mappings,
-	                    sizeof(struct input_mapping) * (state->num_mappings + 1));
+	                    sizeof(struct input_mapping)
+	                      * (state->num_mappings + 1));
 	if (ptr == NULL)
 		return 0;
 	state->mappings = ptr;

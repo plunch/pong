@@ -12,7 +12,6 @@ SRC_PATH = .
 GCC_FLAGS = -std=c99 \
 	    -Wall \
 	    -Wextra \
-	    -Wsuggest-attribute=pure \
 	    -Wsuggest-attribute=noreturn \
 	    -Wno-aggregate-return \
 	    -Wattributes \

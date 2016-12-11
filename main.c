@@ -156,7 +156,6 @@ int main(int argc, char* argv[])
 				ACT_BACK);
 
 
-
 #if 0
 	struct keyboard_mapping_entry keymap[] = {
 		{SDLK_w, GA_P1_MOVE_UP},

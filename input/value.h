@@ -42,7 +42,7 @@ struct input_value {
 struct input_source_id {
 	unsigned int source;
 	unsigned int which;
-	unsigned int device;
+	void* device;
 };
 
 #pragma GCC diagnostic push
