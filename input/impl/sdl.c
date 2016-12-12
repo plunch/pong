@@ -556,12 +556,12 @@ struct input_source_id input_sdl_read_id(const char* src, size_t max)
 		return res;
 
 	char* more;
-	unsigned long ul = strtoul(src, &more, 0);
+	unsigned long ul = strtoul(src + 2, &more, 0);
 	if (more == src || ul > UINT_MAX
-	     || src > more || (size_t)(src - more) > max)
+	     || src > more || (size_t)(more - src) > max)
 		return res;
 	res.which = (unsigned)ul;
-	max -= (size_t)(src - more);
+	max -= (size_t)(more - src);
 
 	switch(src[0]) {
 		case 's':

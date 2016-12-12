@@ -11,6 +11,7 @@
 #include "audioproxy.h"
 
 #include "input/impl/sdl.h"
+#include "input_persistence.h"
 
 #include "menus/mainmenu.h"
 #include "menus/options.h"
@@ -106,54 +107,75 @@ int main(int argc, char* argv[])
 	};
 	pllist_append(&input.contexts, &menu_ctx);
 
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_UP),
-				ACT_UP);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_scancode(SDL_SCANCODE_W),
-				ACT_UP);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_DOWN),
-				ACT_DOWN);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_scancode(SDL_SCANCODE_S),
-				ACT_DOWN);
+	SDL_RWops* menumap = SDL_RWFromFile("content/menumap.txt", "r");
+	if (menumap != NULL) {
+		if (!input_state_read(&menu_ctx.state, menumap))
+			fprintf(stderr, "Cannot read menumap.txt: %s",
+			        SDL_GetError());
+		SDL_RWclose(menumap);
+	} else {
+		SDL_ClearError();
 
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_LEFT),
-				ACT_LEFT);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_scancode(SDL_SCANCODE_A),
-				ACT_LEFT);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_RIGHT),
-				ACT_RIGHT);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_scancode(SDL_SCANCODE_D),
-				ACT_RIGHT);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_UP),
+					ACT_UP);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_scancode(SDL_SCANCODE_W),
+					ACT_UP);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_DOWN),
+					ACT_DOWN);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_scancode(SDL_SCANCODE_S),
+					ACT_DOWN);
 
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_RETURN),
-				ACT_CONFIRM);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_RETURN2),
-				ACT_CONFIRM);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_KP_ENTER),
-				ACT_CONFIRM);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_LEFT),
+					ACT_LEFT);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_scancode(SDL_SCANCODE_A),
+					ACT_LEFT);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_RIGHT),
+					ACT_RIGHT);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_scancode(SDL_SCANCODE_D),
+					ACT_RIGHT);
 
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_BACKSPACE),
-				ACT_BACK);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_KP_BACKSPACE),
-				ACT_BACK);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_ESCAPE),
-				ACT_BACK);
-	input_state_add_mapping(&menu_ctx.state,
-	                        input_sdl_keycode(SDLK_CANCEL),
-				ACT_BACK);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_RETURN),
+					ACT_CONFIRM);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_RETURN2),
+					ACT_CONFIRM);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_KP_ENTER),
+					ACT_CONFIRM);
+
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_BACKSPACE),
+					ACT_BACK);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_KP_BACKSPACE),
+					ACT_BACK);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_ESCAPE),
+					ACT_BACK);
+		input_state_add_mapping(&menu_ctx.state,
+		                        input_sdl_keycode(SDLK_CANCEL),
+					ACT_BACK);
+
+		SDL_RWops* out = SDL_RWFromFile("content/menumap.txt", "w");
+		if (out != NULL) {
+			if (!input_state_write(&menu_ctx.state, out))
+				fprintf(stderr,
+				        "Cannot write menumap.txt: %s",
+			        	SDL_GetError());
+			SDL_RWclose(out);
+		} else {
+			SDL_ClearError();
+		}
+	}
 
 
 #if 0
