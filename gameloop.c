@@ -7,10 +7,6 @@
 #include "scenerender.h"
 
 
-/*#include "input.h"*/
-/*#include "inputsource_sdl.h"*/
-/*#include "input/keyboard.h"*/
-
 #include "gameaction.h"
 #include "input/impl/sdl.h"
 
