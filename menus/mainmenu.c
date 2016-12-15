@@ -45,11 +45,14 @@ static void mainmenu_paint(void* userdata, struct renderer* r)
 		x = 0;
 	}
 
-	int logoh = h / 3;
+	//int logoh = h / 3;
+
+	y = (h/6) - 50/2;
 
 	// Draw logo
+	ri_drawtext(r, RTA_LEFT, RTS_DEFAULT, x, y, w, 50, "PONG");
 	
-	int opty = y + logoh;
+	int opty = h/3;
 	// Draw x
 	opty += draw_option(r, m->selected == MAINM_PLAY, x, opty, w, h, "PLAY");
 	opty += draw_option(r, m->selected == MAINM_OPTIONS, x, opty, w, h, "OPTIONS");

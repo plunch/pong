@@ -8,8 +8,9 @@
 	X("paddle1", 255, 255, 255, 1) \
 	X("paddle2", 255, 255, 255, 1) \
 	X("ball", 255, 255, 255, 1) \
-	X("field", 128, 128, 128, 0) \
-	X("volumeslider", 255, 255, 255, 1) \
+	X("field", 255, 255, 255, 2) \
+	X("volumeslider", 255, 255, 255, 3) \
+	X("volumesliderbox", 255, 255, 255, 0) \
 	X("winstategfx", 255, 255, 255, 1) \
 
 static struct render_item* load(void* data, const char* path)
@@ -58,16 +59,61 @@ static void draw(void* data, struct render_item* item,
 		sdl_error("Set SDL_Renderer draw color before drawing item");
 	}
 
-	SDL_Rect r;
+	SDL_Rect r, top, bottom, left, right;
 	r.x = x;
 	r.y = y;
 	r.w = w;
 	r.h = h;
 
-	if (item->fill) {
-		SDL_RenderFillRect(re->rend, &r);
-	} else {
-		SDL_RenderDrawRect(re->rend, &r);
+	switch(item->fill) {
+		case 1:
+			SDL_RenderFillRect(re->rend, &r);
+			break;
+		case 2:
+			top.x = r.x + r.w/2;
+			top.y = r.y;
+			top.w = 10;
+			top.h = r.h;
+			SDL_RenderFillRect(re->rend, &top);
+
+			// FALLTHROUGH
+		case 0:
+			top.x = r.x;
+			top.y = r.y;
+			top.w = r.w;
+			top.h = 10;
+
+			bottom.x = r.x;
+			bottom.y = r.y + r.h - 10;
+			bottom.w = r.w;
+			bottom.h = 10;
+
+			left.x = r.x;
+			left.y = r.y;
+			left.w = 10;
+			left.h = r.h;
+
+			right.x = r.x + r.w - 10;
+			right.y = r.y;
+			right.w = 10;
+			right.h = r.h;
+
+			SDL_RenderFillRect(re->rend, &top);
+			SDL_RenderFillRect(re->rend, &bottom);
+			SDL_RenderFillRect(re->rend, &left);
+			SDL_RenderFillRect(re->rend, &right);
+			break;
+		case 3:
+			top.x = r.x;
+			top.y = r.y;
+			top.w = 10;
+			top.h = r.h;
+
+			while(top.x + top.w < r.x + r.w) {
+				SDL_RenderFillRect(re->rend, &top);
+				top.x += top.w * 2;
+			}
+			break;
 	}
 }
 
@@ -97,8 +143,16 @@ static size_t drawtext(void* data,
 	
 	if (s & RTS_SELECTED) {
 		SDL_SetRenderDrawColor(re->rend, 255, 255, 255, SDL_ALPHA_OPAQUE);
+		region.x -= 10;
+		region.y -= 10;
+		region.w += 20;
+		region.h += 20;
 		SDL_RenderFillRect(re->rend, &region);
 		SDL_SetTextureColorMod(re->text->b, 0, 0, 0);
+		region.x += 10;
+		region.y += 10;
+		region.w -= 20;
+		region.h -= 20;
 	}
 	size_t ret = render_text(re->rend, re->text, region, align, text);
 	if (s & RTS_SELECTED) SDL_SetTextureColorMod(re->text->b, 255, 255, 255);

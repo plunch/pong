@@ -20,6 +20,10 @@
 
 #include <SDL2/SDL.h>
 
+#ifndef AUDIO
+#define AUDIO 0
+#endif
+
 
 enum high_state {
 	ST_INGAME,
@@ -83,7 +87,7 @@ int main(int argc, char* argv[])
 		die_sdl("Create rendering context");
 	}
 
-#if 0
+#if AUDIO
 	struct audio_data* aud = audio_init();
 	if (aud == NULL)
 		die("Initialize audio");
@@ -380,7 +384,7 @@ mainmenu:
 	destroy_optionsmenu(&opt);
 
 
-#if 0
+#if AUDIO
 	audio_destroy(aud);
 #endif
 

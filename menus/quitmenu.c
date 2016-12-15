@@ -62,6 +62,7 @@ static enum menu_result quitmenu_action(void* userdata, enum action action)
 			}
 			return MNU_NONE;
 		case ACT_DOWN:
+
 			if (m->selected != QUITM_EXIT) {
 				m->selected++;
 				play_menu_move();
