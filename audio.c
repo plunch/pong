@@ -28,16 +28,17 @@ static float sample(int audiofreq, struct sample* s, size_t i)
 {
 	float f = (float)audiofreq/s->frequency;
 	float v = fmodf((float)i, f) / f;
+	v = (v - 0.5f) * 2;
 
 	switch(s->type) {
 		case WAVE_SQUARE:
-			return v < 0.5f ? 1 : 0;
+			return v > 0.0f? 1.0f : -1.0f;
 		case WAVE_TRIANGLE:
 			return fabsf(v - 0.5f) * 2;
 		case WAVE_SAWTOOTH:
 			return v;
 		default:
-			return 0;
+			return .5f;
 	}
 }
 
@@ -83,8 +84,8 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 
 
 		if (towrite > 1) towrite = 1;
-		if (towrite < 0) towrite = 0;
-		stream[i] = (Uint8)(UINT8_MAX * towrite);
+		if (towrite < -1) towrite = -1;
+		stream[i] = (Uint8)((towrite + 1) * 127);
 	}
 	if (data->conversion.needed)
 		SDL_ConvertAudio(&data->conversion);
@@ -107,6 +108,9 @@ void audio_play(struct audio_data* d, enum wavetype type,
 {
 	// Don't play if audio is disabled
 	if (d->dev <= 0) return;
+
+	// WTF
+	ms /= 2;
 
 	SDL_LockAudioDevice(d->dev);
 
@@ -143,10 +147,10 @@ struct audio_data* audio_init()
 
 	SDL_AudioSpec want;
 
-	want.freq = 48000;
-	want.format = AUDIO_S16;
-	want.channels = 2;
-	want.samples = 2048;
+	want.freq = 44100;
+	want.format = AUDIO_U8;
+	want.channels = 1;
+	want.samples = 512;
 	want.callback = &sdl_audio_callback;
 	want.userdata = data;
 
@@ -160,7 +164,7 @@ struct audio_data* audio_init()
 		SDL_PauseAudioDevice(data->dev, 0);
 		SDL_BuildAudioCVT(&data->conversion,
 		                  AUDIO_U8, 1, data->spec.samples,
-		                  data->spec.format, 2, data->spec.samples);
+		                  data->spec.format, 1, data->spec.samples);
 	} else {
 		sdl_error("Audio disabled");
 	}
