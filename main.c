@@ -34,14 +34,17 @@ enum high_state {
 
 static enum menu_result game(struct renderer* re,
                              struct input_kernel* k,
+                             struct input_context* g,
                              struct input_context* m)
 {
+	input_state_reset(&g->state);
 	struct scene s;
 	
 	s.w = 1200;
 	s.h = 800;
 	s.p1pt = 0;
 	s.p2pt = 0;
+	s.shake = 0;
 
 	s.bs = 2;
 	s.b.x = 600;
@@ -61,7 +64,7 @@ static enum menu_result game(struct renderer* re,
 	s.p2.s = 6;
 	s.p2.d = 0;
 
-	return main_loop(re, &s, k, m);
+	return main_loop(re, &s, k, g, m);
 }
 
 int main(int argc, char* argv[])
@@ -109,12 +112,62 @@ int main(int argc, char* argv[])
 		0,
 		"Menu"
 	};
+
+	struct input_context game_context = {
+		{0, NULL, 0, NULL},
+		1,
+		"Game",
+	};
+
+	input_state_create(&game_context.state, GAMEACTION_MAX+1);
+	input_state_create(&menu_ctx.state, MINT_USER_START);
+
+	SDL_RWops* gamemap = SDL_RWFromFile("content/gamemap.txt", "r");
+	if (gamemap != NULL) {
+		if (!input_state_read(&game_context.state, gamemap))
+			fprintf(stderr, "Cannot read gamemap.txt: %s\n",
+			        SDL_GetError());
+		SDL_RWclose(gamemap);
+	} else {
+		SDL_ClearError();
+
+		input_state_add_mapping(&game_context.state,
+       	                                input_sdl_keycode(SDLK_ESCAPE),
+		                        BACK_INTENT);
+		input_state_add_mapping(&game_context.state,
+       	                                input_sdl_scancode(SDL_SCANCODE_W),
+		                        GA_P1_MOVE_UP);
+		input_state_add_mapping(&game_context.state,
+       	                                input_sdl_scancode(SDL_SCANCODE_S),
+		                        GA_P1_MOVE_DOWN);
+		input_state_add_mapping(&game_context.state,
+       	                                input_sdl_keycode(SDLK_UP),
+		                        GA_P2_MOVE_UP);
+		input_state_add_mapping(&game_context.state,
+       	                                input_sdl_keycode(SDLK_DOWN),
+		                        GA_P2_MOVE_DOWN);
+
+		SDL_RWops* out = SDL_RWFromFile("content/gamemap.txt", "w");
+		if (out != NULL) {
+			if (!input_state_write(&game_context.state, out))
+				fprintf(stderr,
+				        "Cannot write gamemap.txt: %s\n",
+			        	SDL_GetError());
+			SDL_RWclose(out);
+		} else {
+			SDL_ClearError();
+		}
+	}
+
 	pllist_append(&input.contexts, &menu_ctx);
+	pllist_append(&input.contexts, &game_context);
+
+
 
 	SDL_RWops* menumap = SDL_RWFromFile("content/menumap.txt", "r");
 	if (menumap != NULL) {
 		if (!input_state_read(&menu_ctx.state, menumap))
-			fprintf(stderr, "Cannot read menumap.txt: %s",
+			fprintf(stderr, "Cannot read menumap.txt: %s\n",
 			        SDL_GetError());
 		SDL_RWclose(menumap);
 	} else {
@@ -173,7 +226,7 @@ int main(int argc, char* argv[])
 		if (out != NULL) {
 			if (!input_state_write(&menu_ctx.state, out))
 				fprintf(stderr,
-				        "Cannot write menumap.txt: %s",
+				        "Cannot write menumap.txt: %s\n",
 			        	SDL_GetError());
 			SDL_RWclose(out);
 		} else {
@@ -249,7 +302,7 @@ int main(int argc, char* argv[])
 				break;
 			case ST_INGAME:
 				menu_ctx.active = 0;
-				switch(game(&grend, &input, &menu_ctx)) {
+				switch(game(&grend, &input, &game_context, &menu_ctx)) {
 					case MNU_QUIT:
 						st = ST_QUITTING;
 						continue;
@@ -287,6 +340,7 @@ int main(int argc, char* argv[])
 
 	pllist_clear(&input.contexts);
 	input_state_release(&menu_ctx.state);
+	input_state_release(&game_context.state);
 	destroy_sdl_renderer(&grend);
 	SDL_DestroyRenderer(r);
 	SDL_DestroyWindow(w);

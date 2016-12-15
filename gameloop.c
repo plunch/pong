@@ -17,8 +17,6 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#define BACK_INTENT GAMEACTION_MAX
-
 enum game_state {
 	GAME_RUNNING,
 	GAME_PAUSED,
@@ -76,6 +74,7 @@ static enum menu_result read_input(struct scene* s,
 enum menu_result main_loop(struct renderer* r,
                            struct scene* s,
                            struct input_kernel* input,
+			   struct input_context* game_context,
 			   struct input_context* menu_context)
 {
 	enum menu_result retval = MNU_NONE;
@@ -86,34 +85,6 @@ enum menu_result main_loop(struct renderer* r,
 	struct render_item* paddle2 = ri_load(r, "paddle2");
 	struct render_item* ball = ri_load(r, "ball");
 	struct render_item* field = ri_load(r, "field");
-
-	struct input_context game_context = {
-		{0, NULL, 0, NULL},
-		1,
-		"Game",
-	};
-
-	input_state_create(&game_context.state, GAMEACTION_MAX+1);
-
-	input_state_add_mapping(&game_context.state,
-                        	input_sdl_keycode(SDLK_ESCAPE),
-				BACK_INTENT);
-	input_state_add_mapping(&game_context.state,
-                        	input_sdl_scancode(SDL_SCANCODE_W),
-				GA_P1_MOVE_UP);
-	input_state_add_mapping(&game_context.state,
-                        	input_sdl_scancode(SDL_SCANCODE_S),
-				GA_P1_MOVE_DOWN);
-	input_state_add_mapping(&game_context.state,
-                        	input_sdl_keycode(SDLK_UP),
-				GA_P2_MOVE_UP);
-	input_state_add_mapping(&game_context.state,
-                        	input_sdl_keycode(SDLK_DOWN),
-				GA_P2_MOVE_DOWN);
-
-
-	pllist_append(&input->contexts, &game_context);
-	pllist_append(&input->contexts, menu_context);
 
 	struct input_event_buffer input_buffer;
 	if (!input_event_buffer_init(&input_buffer)) {
@@ -173,7 +144,7 @@ enum menu_result main_loop(struct renderer* r,
 				unsigned int loops = 0;
 				while(SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
 					switch (read_input(s, input,
-			                   		&game_context.state, &input_buffer)) {
+			                   		&game_context->state, &input_buffer)) {
 						case MNU_QUIT:
 							tick_diff = SDL_GetTicks() - next_tick;
 
@@ -220,9 +191,6 @@ enum menu_result main_loop(struct renderer* r,
 
 exit:
 	input_event_buffer_free(&input_buffer);
-	pllist_remove(&input->contexts, &game_context);
-	pllist_remove(&input->contexts, menu_context);
-	input_state_release(&game_context.state);
 	ri_destroy(r, paddle1);
 	ri_destroy(r, paddle2);
 	ri_destroy(r, ball);

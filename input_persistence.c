@@ -67,9 +67,11 @@ int input_state_read(struct input_state* state, SDL_RWops* rw)
 				if (!iseof) {
 					SDL_SetError("%s", sdl_error);
 					return 0;
+				} else if (len == 0) {
+					return 1;
 				}
 			}
-			if (buf[len] == '\n') {
+			if (iseof || buf[len] == '\n') {
 				buf[len] = '\0';
 				if (len > 0 && buf[len-1] == '\r')
 					buf[--len] = '\0';
