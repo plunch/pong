@@ -6,9 +6,9 @@
 
 #include "audioproxy.h"
 
-#define PADDLEHITSHAKE .05
-#define WALLSHAKE .025
-#define POINTSHAKE .5
+#define PADDLEHITSHAKE .01
+#define WALLSHAKE .005
+#define POINTSHAKE .02
 
 #define SHAKE_DECAY .9
 
