@@ -58,8 +58,8 @@ int step_simulation(struct scene* s, real dt)
 		real diffnorm = (by - py) / (s->p1.width/2);
 
 		real perc = YCOORDACCELL;
-		if ((diffnorm < 0 && s->p2.d < 0)
-		 || (diffnorm > 0 && s->p2.d > 0))
+		if ((diffnorm < 0 && s->p1.d < 0)
+		 || (diffnorm > 0 && s->p1.d > 0))
 			perc = YCOORDACCELLSAME;
 
 		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
@@ -83,8 +83,8 @@ int step_simulation(struct scene* s, real dt)
 		real diffnorm = (by - py) / (s->p2.width/2);
 
 		real perc = YCOORDACCELL;
-		if ((diffnorm < 0 && s->p1.d < 0)
-		 || (diffnorm > 0 && s->p1.d > 0))
+		if ((diffnorm < 0 && s->p2.d < 0)
+		 || (diffnorm > 0 && s->p2.d > 0))
 			perc = YCOORDACCELLSAME;
 
 		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
