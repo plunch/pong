@@ -3,7 +3,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 #include "audioproxy.h"
+
+#define PADDLEHITSHAKE .05
+#define WALLSHAKE .025
+#define POINTSHAKE .5
+
+#define SHAKE_DECAY .9
 
 #define RECT_INTERSECTS(x1, y1, w1, h1, x2, y2, w2, h2) !(x1 + w1 < x2 \
                                                        || x2 + w2 < x1 \
@@ -12,6 +19,14 @@
 
 int step_simulation(struct scene* s, real dt)
 {
+	if (s->shake > 0)
+		s->shake *= SHAKE_DECAY * dt;
+	else if (s->shake < 0)
+		s->shake = 0;
+
+	s->offx = ((rand()/(real)RAND_MAX)-.5) * 2 * s->w * s->shake;
+	s->offy = ((rand()/(real)RAND_MAX)-.5) * s->h * s->shake;
+
 	s->b.x += s->b.dx * dt;
 	s->b.y += s->b.dy * dt;
 
@@ -49,6 +64,7 @@ int step_simulation(struct scene* s, real dt)
 
 		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
 
+		s->shake = PADDLEHITSHAKE;
 		play_paddle_hit();
 	}
 
@@ -73,11 +89,14 @@ int step_simulation(struct scene* s, real dt)
 
 		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
 
+		s->shake = PADDLEHITSHAKE;
 		play_paddle_hit();
 	}
 
-	if (s->b.y + BALLSIZE > s->h || s->b.y < 0)
+	if (s->b.y + BALLSIZE > s->h || s->b.y < 0) {
+		s->shake = WALLSHAKE;
 		s->b.dy = -s->b.dy;
+	}
 
 	if (s->b.x < 0) {
 		// Player 2 point
@@ -89,6 +108,7 @@ int step_simulation(struct scene* s, real dt)
 		s->b.dx = s->bs;
 		s->bs += BALLSPEEDINCREASE;
 
+		s->shake = POINTSHAKE;
 		play_player_point();
 	}
 	if (s->b.x > s->w) {
@@ -101,6 +121,7 @@ int step_simulation(struct scene* s, real dt)
 		s->b.dx = -s->bs;
 		s->bs += BALLSPEEDINCREASE;
 
+		s->shake = POINTSHAKE;
 		play_player_point();
 	}
 

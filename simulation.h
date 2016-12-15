@@ -31,6 +31,8 @@ struct scene {
 	real bs;
 	struct ball b;
 	struct paddle p1, p2;
+	real offx, offy;
+	real shake;
 };
 
 int step_simulation(struct scene*, real);

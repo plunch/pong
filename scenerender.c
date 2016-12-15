@@ -54,22 +54,26 @@ void draw_scene(struct scene* s,
 
 	// Field
 	
-	ri_draw(re, field, 0, 0, round2integer(s->w), round2integer(s->h));
+	ri_draw(re, field,
+	        round2integer(s->offx),
+	        round2integer(s->offy),
+	        round2integer(s->w),
+	        round2integer(s->h));
 
 
 	// Ball
 
 	ri_draw(re, ball, 
-	        round2integer(s->b.x),
-	        round2integer(s->b.y),
+	        round2integer(s->offx + s->b.x),
+	        round2integer(s->offy + s->b.y),
 	        BALLSIZE, BALLSIZE);
 
 	
 	// Player 1
 
 	ri_draw(re, paddle1,
-	        round2integer(s->p1.x),
-	        round2integer(s->p1.y),
+	        round2integer(s->offx + s->p1.x),
+	        round2integer(s->offy + s->p1.y),
 	        PADDLETHICKNESS,
 	        round2integer(s->p1.width));
 
@@ -77,19 +81,19 @@ void draw_scene(struct scene* s,
 	// Player 2
 
 	ri_draw(re, paddle2,
-	        round2integer(s->p2.x),
-	        round2integer(s->p2.y),
+	        round2integer(s->offx + s->p2.x),
+	        round2integer(s->offy + s->p2.y),
 	        PADDLETHICKNESS,
 	        round2integer(s->p2.width));
 
-	int tx = 30;
-	int ty = 30;
+	int tx = round2integer(s->offx + 30);
+	int ty = round2integer(s->offy + 30);
 	int tw = round2integer(s->w / 2.0 - 60);
 	int th = NUMPXSIZE * 5;
 
 	print_score(re, tx, ty, tw, th, s->p1pt, 0);
 
 	
-	tx = round2integer(s->w / 2.0 + 30.0);
+	tx = round2integer(s->w / 2.0 + 30.0 + s->offx);
 	print_score(re, tx, ty, tw, th, s->p2pt, 1);
 }
