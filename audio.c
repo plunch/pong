@@ -1,6 +1,8 @@
 #include "audio.h"
 #include "global.h"
 
+#include "util/noise.h"
+
 #include <stdint.h>
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -10,7 +12,11 @@ struct sample {
 	float frequency, volume;
 	enum wavetype type;
 
-	size_t remaining;
+	size_t remaining, started, ending;
+
+	union {
+		struct noise noise;
+	} priv;
 };
 
 struct audio_data {
@@ -24,6 +30,28 @@ struct audio_data {
 	struct sample samples[CONCURRENT_SAMPLES];
 };
 
+static void finalize_sample(struct sample* s)
+{
+	switch(s->type) {
+		default: return;
+
+		case WAVE_WNOISE:
+			 noise_destroy(&s->priv.noise);
+			 break;
+	}
+}
+
+static float sample_volume(struct sample* s, size_t i)
+{
+	return 1;
+	/*
+	size_t c = s->ending - s->started;
+	i -= s->started;
+
+	return 1 - ((float)i / (float)c);
+	*/
+}
+
 static float sample(int audiofreq, struct sample* s, size_t i)
 {
 	float f = (float)audiofreq/s->frequency;
@@ -34,9 +62,11 @@ static float sample(int audiofreq, struct sample* s, size_t i)
 		case WAVE_SQUARE:
 			return v > 0.0f? 1.0f : -1.0f;
 		case WAVE_TRIANGLE:
-			return fabsf(v - 0.5f) * 2;
+			return fabsf(v)*2-1;
 		case WAVE_SAWTOOTH:
 			return v;
+		case WAVE_WNOISE:
+			return noise_sample(&s->priv.noise, v);
 		default:
 			return .5f;
 	}
@@ -73,9 +103,13 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 			if (data->samples[sidx].remaining > i) {
 				contrib += data->samples[sidx].volume;
 
+				float vol = data->samples[sidx].volume;
+				vol *= sample_volume(&data->samples[sidx],
+				                     data->sample + i);
+
 				towrite += sample(data->spec.freq,
 				                  &data->samples[sidx],
-				                  data->sample + i) * data->samples[sidx].volume;
+				                  data->sample + i) * vol;
 			}
 		}
 
@@ -87,6 +121,7 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 		if (towrite < -1) towrite = -1;
 		stream[i] = (Uint8)((towrite + 1) * 127);
 	}
+	fwrite(stream, sizeof(Uint8), l, stdout);
 	if (data->conversion.needed)
 		SDL_ConvertAudio(&data->conversion);
 
@@ -95,6 +130,7 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 		if (data->samples[sidx].remaining < l) {
 			// All written
 			data->samples[sidx].remaining = 0;
+			finalize_sample(data->samples + sidx);
 		} else {
 			data->samples[sidx].remaining -= l;
 		}
@@ -124,6 +160,22 @@ void audio_play(struct audio_data* d, enum wavetype type,
 	if (idx < 0) {
 		// queue full
 		SDL_UnlockAudioDevice(d->dev);
+		return;
+	}
+
+	switch(type) {
+		default: break;
+
+		case WAVE_WNOISE:
+			 d->samples[idx].priv.noise.num_frequencies = 14;
+			 if (!noise_create(&d->samples[idx].priv.noise,
+			                  /* freq start */ freq,
+			                  /* freq end   */ freq*64,
+			                  WHITE_NOISE_EXP)) {
+			 	 SDL_UnlockAudioDevice(d->dev);
+				return;
+			 }
+			 break;
 	}
 
 	float samples_per_ms = (float)d->spec.freq / 1000.0f;
@@ -132,6 +184,9 @@ void audio_play(struct audio_data* d, enum wavetype type,
 	d->samples[idx].volume = vol;
 	d->samples[idx].type = type;
 	d->samples[idx].remaining = (size_t)(lrintf(samples_per_ms * (float)ms));
+	d->samples[idx].started = d->sample;
+	d->samples[idx].ending = d->sample + d->samples[idx].remaining;
+
 
 	SDL_UnlockAudioDevice(d->dev);
 }
