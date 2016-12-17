@@ -11,7 +11,7 @@
 	X("paddle1", 0xD1, 0x78, 0x86, 1) \
 	X("paddle2", 0xD1, 0x78, 0x86, 1) \
 	X("ball", 0xD1, 0x78, 0x86, 1) \
-	X("field", 0xD1, 0x78, 0x86, 2) \
+	X("field", 0xD1, 0x78, 0x86, 4) \
 	X("volumeslider", 0xD1, 0x78, 0x86, 3) \
 	X("volumesliderbox", 0xD1, 0x78, 0x86, 0) \
 	X("winstategfx", 0xD1, 0x78, 0x86, 1) \
@@ -116,6 +116,29 @@ static void draw(void* data, struct render_item* item,
 				SDL_RenderFillRect(re->rend, &top);
 				top.x += top.w * 2;
 			}
+		case 4:
+			top.x = r.x + r.w/2;
+			top.y = r.y;
+			top.w = 10;
+			top.h = 10;
+
+			while(top.y + top.h < r.y + r.h) {
+				SDL_RenderFillRect(re->rend, &top);
+				top.y += top.h * 2;
+			}
+
+			top.x = r.x;
+			top.y = r.y;
+			top.w = r.w;
+			top.h = 10;
+
+			bottom.x = r.x;
+			bottom.y = r.y + r.h - 10;
+			bottom.w = r.w;
+			bottom.h = 10;
+
+			SDL_RenderFillRect(re->rend, &top);
+			SDL_RenderFillRect(re->rend, &bottom);
 			break;
 	}
 }
