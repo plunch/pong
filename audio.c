@@ -16,6 +16,10 @@ struct sample {
 
 	union {
 		struct noise noise;
+		struct {
+			float last;
+			size_t next;
+		} n;
 	} priv;
 };
 
@@ -57,6 +61,9 @@ static float sample(int audiofreq, struct sample* s, size_t i)
 	float f = (float)audiofreq/s->frequency;
 	float v = fmodf((float)i, f) / f;
 	v = (v - 0.5f) * 2;
+	float pv = fmodf((float)(i-1), f) / f;
+	pv = (v-.5f)*2;
+
 
 	switch(s->type) {
 		case WAVE_SQUARE:
@@ -67,6 +74,13 @@ static float sample(int audiofreq, struct sample* s, size_t i)
 			return v;
 		case WAVE_WNOISE:
 			return noise_sample(&s->priv.noise, v);
+		case WAVE_NOISE:
+			;
+			if (i > s->priv.n.next) {
+				s->priv.n.last = (rand() / (float)RAND_MAX)*2-1;
+				s->priv.n.next = i + f;
+			}
+			return s->priv.n.last;
 		default:
 			return .5f;
 	}
@@ -121,7 +135,9 @@ static void sdl_audio_callback(void* userdata, Uint8* stream, int len)
 		if (towrite < -1) towrite = -1;
 		stream[i] = (Uint8)((towrite + 1) * 127);
 	}
+#if 0
 	fwrite(stream, sizeof(Uint8), l, stdout);
+#endif
 	if (data->conversion.needed)
 		SDL_ConvertAudio(&data->conversion);
 
@@ -175,6 +191,10 @@ void audio_play(struct audio_data* d, enum wavetype type,
 			 	 SDL_UnlockAudioDevice(d->dev);
 				return;
 			 }
+			 break;
+
+		case WAVE_NOISE:
+			 d->samples[idx].priv.n.next = d->sample + d->spec.freq/freq;
 			 break;
 	}
 

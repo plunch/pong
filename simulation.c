@@ -96,6 +96,7 @@ int step_simulation(struct scene* s, real dt)
 	if (s->b.y + BALLSIZE > s->h || s->b.y < 0) {
 		s->shake = WALLSHAKE;
 		s->b.dy = -s->b.dy;
+		play_wall_hit();
 	}
 
 	if (s->b.x < 0) {

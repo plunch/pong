@@ -21,6 +21,7 @@ enum wavetype {
 	WAVE_TRIANGLE,
 	WAVE_SAWTOOTH,
 	WAVE_WNOISE,
+	WAVE_NOISE,
 };
 
 // Opaque struct for thead safety
