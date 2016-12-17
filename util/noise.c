@@ -8,9 +8,18 @@
 #endif
 
 
+static float randf()
+{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+	return rand() / (float)RAND_MAX;
+#pragma GCC diagnostic pop
+}
+
+
 static float wave(float frequency, float pos, float phase)
 {
-	return sinf(M_PI*2 * frequency * pos + phase);
+	return sinf((float)M_PI*2 * frequency * pos + phase);
 }
 
 float noise_sample(struct noise* n, float position)
@@ -46,11 +55,11 @@ int noise_init(struct noise* n,
 		return 0;
 
 	float freq_step = (frequency_end - frequency_start)
-	                  / n->num_frequencies;
+	                  / (float)n->num_frequencies;
 	float amp_sum = 0;
 	for (unsigned i = 0; i < n->num_frequencies; ++i) {
-		freq[i] = frequency_start + i * freq_step;
-		phas[i] = rand() / (float)RAND_MAX * M_PI*2;
+		freq[i] = frequency_start + (float)i * freq_step;
+		phas[i] = randf()*(float)M_PI*2;
 		amp[i]  = powf(freq[i], exponent);
 		amp_sum += amp[i];
 	}
