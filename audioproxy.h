@@ -7,6 +7,7 @@ void proxy_setvolume(float);
 float proxy_getvolume(void);
 
 void play_paddle_hit(void);
+void play_wall_hit(void);
 void play_player_point(void);
 
 void play_menu_move(void);

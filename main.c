@@ -21,7 +21,7 @@
 #include <SDL2/SDL.h>
 
 #ifndef AUDIO
-#define AUDIO 0
+#define AUDIO 1
 #endif
 
 
