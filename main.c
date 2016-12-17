@@ -53,7 +53,7 @@ static enum menu_result game(struct renderer* re,
 	s.b.dy = 0;
 
 	s.p1.x = 50;
-	s.p1.y = 300 - 100;
+	s.p1.y = 300;
 	s.p1.width = 200;
 	s.p1.s = 6;
 	s.p1.d = 0;
