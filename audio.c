@@ -89,7 +89,7 @@ static float sample(int audiofreq, struct sample* s, size_t i)
 		case WAVE_WNOISE:
 			return noise_sample(&s->p.wnoise, v);
 		case WAVE_NOISE:
-			if (i <= s->p.noise.sample) {
+			if (i >= s->p.noise.sample) {
 				s->p.noise.last = randf()*2-1;
 				s->p.noise.sample = i + (size_t)f;
 			}
