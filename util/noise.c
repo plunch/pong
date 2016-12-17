@@ -7,14 +7,10 @@
 #define M_PI (3.141592653589793)
 #endif
 
-#ifndef M_PI_2
-#define M_PI_2 (M_PI*2)
-#endif
-
 
 static float wave(float frequency, float pos, float phase)
 {
-	return sinf(M_PI_2 * frequency * pos + phase);
+	return sinf(M_PI*2 * frequency * pos + phase);
 }
 
 float noise_sample(struct noise* n, float position)
@@ -54,7 +50,7 @@ int noise_init(struct noise* n,
 	float amp_sum = 0;
 	for (unsigned i = 0; i < n->num_frequencies; ++i) {
 		freq[i] = frequency_start + i * freq_step;
-		phas[i] = rand() / (float)RAND_MAX * M_PI_2;
+		phas[i] = rand() / (float)RAND_MAX * M_PI*2;
 		amp[i]  = powf(freq[i], exponent);
 		amp_sum += amp[i];
 	}
