@@ -4,14 +4,17 @@
 #include <assert.h>
 #include <string.h>
 
+#define BGCOLOR 0x22, 0x69, 0x88
+#define FGCOLOR 0xD1, 0x78, 0x86
+
 #define ITEM_TABLE \
-	X("paddle1", 255, 255, 255, 1) \
-	X("paddle2", 255, 255, 255, 1) \
-	X("ball", 255, 255, 255, 1) \
-	X("field", 255, 255, 255, 2) \
-	X("volumeslider", 255, 255, 255, 3) \
-	X("volumesliderbox", 255, 255, 255, 0) \
-	X("winstategfx", 255, 255, 255, 1) \
+	X("paddle1", 0xD1, 0x78, 0x86, 1) \
+	X("paddle2", 0xD1, 0x78, 0x86, 1) \
+	X("ball", 0xD1, 0x78, 0x86, 1) \
+	X("field", 0xD1, 0x78, 0x86, 2) \
+	X("volumeslider", 0xD1, 0x78, 0x86, 3) \
+	X("volumesliderbox", 0xD1, 0x78, 0x86, 0) \
+	X("winstategfx", 0xD1, 0x78, 0x86, 1) \
 
 static struct render_item* load(void* data, const char* path)
 {
@@ -142,27 +145,27 @@ static size_t drawtext(void* data,
 	}
 	
 	if (s & RTS_SELECTED) {
-		SDL_SetRenderDrawColor(re->rend, 255, 255, 255, SDL_ALPHA_OPAQUE);
+		SDL_SetRenderDrawColor(re->rend, FGCOLOR, SDL_ALPHA_OPAQUE);
 		region.x -= 10;
 		region.y -= 10;
 		region.w += 20;
 		region.h += 20;
 		SDL_RenderFillRect(re->rend, &region);
-		SDL_SetTextureColorMod(re->text->b, 0, 0, 0);
+		SDL_SetTextureColorMod(re->text->b, BGCOLOR);
 		region.x += 10;
 		region.y += 10;
 		region.w -= 20;
 		region.h -= 20;
 	}
 	size_t ret = render_text(re->rend, re->text, region, align, text);
-	if (s & RTS_SELECTED) SDL_SetTextureColorMod(re->text->b, 255, 255, 255);
+	if (s & RTS_SELECTED) SDL_SetTextureColorMod(re->text->b, FGCOLOR);
 	return ret;
 }
 
 static void clear(void* data)
 {
 	struct sdl_renderer* re = data;
-	if (SDL_SetRenderDrawColor(re->rend, 0, 0, 0, SDL_ALPHA_OPAQUE) != 0) {
+	if (SDL_SetRenderDrawColor(re->rend, BGCOLOR, SDL_ALPHA_OPAQUE) != 0) {
 		sdl_error("Set SDL_Renderer draw color before clearing");
 	}
 	if (SDL_RenderClear(re->rend) != 0)
