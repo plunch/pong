@@ -62,7 +62,7 @@ int step_simulation(struct scene* s, real dt)
 		 || (diffnorm > 0 && s->p1.d > 0))
 			perc = YCOORDACCELLSAME;
 
-		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
+		s->b.dy += (diffnorm * perc) * dt;
 
 		s->shake = PADDLEHITSHAKE;
 		play_paddle_hit();
@@ -87,7 +87,7 @@ int step_simulation(struct scene* s, real dt)
 		 || (diffnorm > 0 && s->p2.d > 0))
 			perc = YCOORDACCELLSAME;
 
-		s->b.dy += (diffnorm * perc) * s->b.dx * dt;
+		s->b.dy += (diffnorm * perc) * dt;
 
 		s->shake = PADDLEHITSHAKE;
 		play_paddle_hit();

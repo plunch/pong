@@ -4,8 +4,8 @@
 #include "typedefs.h"
 
 #define WINSTATE 13
-#define YCOORDACCELL 0.5
-#define YCOORDACCELLSAME 0.75
+#define YCOORDACCELL 0.75
+#define YCOORDACCELLSAME 1.5
 #define BALLSPEEDINCREASE 4
 #define BOUNCESPEEDSCALE 1.2
 
