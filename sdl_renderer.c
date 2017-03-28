@@ -8,8 +8,8 @@
 #define FGCOLOR 0xD1, 0x78, 0x86
 
 #define ITEM_TABLE \
-	X("paddle1", 0xD1, 0x78, 0x86, 1) \
-	X("paddle2", 0xD1, 0x78, 0x86, 1) \
+	X("paddle1", 0xD1, 0x78, 0x86, 5) \
+	X("paddle2", 0xD1, 0x78, 0x86, 6) \
 	X("ball", 0xD1, 0x78, 0x86, 1) \
 	X("field", 0xD1, 0x78, 0x86, 4) \
 	X("volumeslider", 0xD1, 0x78, 0x86, 3) \
@@ -139,6 +139,27 @@ static void draw(void* data, struct render_item* item,
 
 			SDL_RenderFillRect(re->rend, &top);
 			SDL_RenderFillRect(re->rend, &bottom);
+			break;
+
+		case 5:
+			r.w /= 2;
+			SDL_RenderFillRect(re->rend, &r);
+
+			r.x += r.w;
+			r.h -= r.w*2;
+			r.y += r.w;
+			SDL_RenderFillRect(re->rend, &r);
+			break;
+
+		case 6:
+			r.w /= 2;
+			r.x += r.w;
+			SDL_RenderFillRect(re->rend, &r);
+
+			r.x -= r.w;
+			r.h -= r.w*2;
+			r.y += r.w;
+			SDL_RenderFillRect(re->rend, &r);
 			break;
 	}
 }

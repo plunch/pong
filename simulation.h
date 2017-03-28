@@ -16,7 +16,7 @@ struct ball {
 	real dx, dy;
 };
 
-#define PADDLETHICKNESS 50
+#define PADDLETHICKNESS 20
 
 struct paddle {
 	real x, y;
