@@ -101,7 +101,7 @@ int input_state_apply_event(struct input_state* state, struct input_event* e)
 			print_input_value(e->value);
 			printf(" from ");
 			print_input_source_id(e->id);
-			printf("\n");
+			printf(" to %u\n", (state->mappings + i)->intent);
 #endif
 			apply_event(state, e, state->mappings + i);
 			return 1;
