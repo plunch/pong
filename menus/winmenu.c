@@ -31,7 +31,8 @@ static void winmenu_paint(void* userdata, struct renderer* re)
 	ri_draw(re, s->gfx, x, y, w, h);
 }
 
-static enum menu_result winmenu_action(void* userdata, enum action action)
+static enum menu_result winmenu_action(void* userdata, enum action action,
+                                       int x, int y)
 {
 	UNUSED(userdata);
 	

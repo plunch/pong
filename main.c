@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 	};
 
 	input_state_create(&game_context.state, GAMEACTION_MAX+1);
-	input_state_create(&menu_ctx.state, MINT_USER_START);
+	input_state_create(&menu_ctx.state, ACT_MAX);
 
 	SDL_RWops* gamemap = SDL_RWFromFile("content/gamemap.txt", "r");
 	if (gamemap != NULL) {
@@ -221,6 +221,19 @@ int main(int argc, char* argv[])
 		input_state_add_mapping(&menu_ctx.state,
 		                        input_sdl_keycode(SDLK_CANCEL),
 					ACT_BACK);
+
+		struct input_source_id minputid = {
+			.source = 2,
+			.which  = 2,
+			.device = (void*)0,
+		};
+		input_state_add_mapping(&menu_ctx.state,
+					minputid,
+					ACT_POINTERX);
+		minputid.which = 3;
+		input_state_add_mapping(&menu_ctx.state,
+					minputid,
+					ACT_POINTERY);
 
 		SDL_RWops* out = SDL_RWFromFile("content/menumap.txt", "w");
 		if (out != NULL) {

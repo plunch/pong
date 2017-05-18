@@ -59,7 +59,8 @@ static void mainmenu_paint(void* userdata, struct renderer* r)
 	opty += draw_option(r, m->selected == MAINM_QUIT, x, opty, w, h, "QUIT");
 }
 
-static enum menu_result mainmenu_action(void* userdata, enum action action)
+static enum menu_result mainmenu_action(void* userdata, enum action action,
+                                        int x, int y)
 {
 	struct mainmenu_state* m = userdata;
 

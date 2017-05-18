@@ -4,14 +4,6 @@
 #include "menu.h"
 #include "text.h"
 
-#define MINT_UP 0
-#define MINT_DOWN 1
-#define MINT_LEFT 2
-#define MINT_RIGHT 3
-#define MINT_CONFIRM 4
-#define MINT_BACK 5
-#define MINT_USER_START 7
-
 enum action {
 	ACT_NONE,
 	ACT_BACK,
@@ -20,6 +12,10 @@ enum action {
 	ACT_RIGHT,
 	ACT_UP,
 	ACT_DOWN,
+	ACT_POINTERX,
+	ACT_POINTERY,
+	
+	ACT_MAX,
 };
 
 struct menu {
@@ -27,7 +23,7 @@ struct menu {
 	struct renderer* renderer;
 	struct input_state* input;
 	void (*paint)(void*, struct renderer*);
-	enum menu_result (*action)(void*, enum action);
+	enum menu_result (*action)(void*, enum action, int x, int y);
 };
 
 #endif /* MENUIMPL_H */

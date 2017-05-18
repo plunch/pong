@@ -50,7 +50,8 @@ static void quitmenu_paint(void* userdata, struct renderer* re)
 	y += draw_option(re, m->selected == QUITM_EXIT, x, y, w, h, "YES");
 }
 
-static enum menu_result quitmenu_action(void* userdata, enum action action)
+static enum menu_result quitmenu_action(void* userdata, enum action action,
+                                        int x, int y)
 {
 	struct quitmenu_state* m = userdata;
 
