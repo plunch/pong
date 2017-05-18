@@ -67,7 +67,7 @@ void input_value_update(struct input_intent_value* target,
                          const struct input_value* old)
 {
 	target->key = input_value_as_key(current, old);
-	target->relative = input_value_as_relative(current, old);
+	target->relative += input_value_as_relative(current, old);
 	target->axis = input_value_as_axis(current, old);
 }
 
@@ -133,6 +133,16 @@ void input_state_step(struct input_state* state)
 {
 	assert(state != NULL);
 
-	for (unsigned i = 0; i < state->max_intent; ++i)
-		state->values[i].key = state->values[i].key & KEY_STATE_MASK;
+	for (unsigned i = 0; i < state->max_intent; ++i) {
+		enum input_key new_value = state->values[i].key & KEY_STATE_MASK;
+		state->values[i].relative = 0;
+#if 0
+		if (state->values[i].key != new_value) {
+			printf("Reset %u to ", i);
+			print_input_key(new_value);
+			printf("\n");
+		}
+#endif
+		state->values[i].key = new_value;
+	}
 }
