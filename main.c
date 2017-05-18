@@ -285,6 +285,7 @@ int main(int argc, char* argv[])
 			case ST_QUITTING: break;
 			case ST_MAINMENU:
 				menu_ctx.active = 1;
+				game_context.active = 0;
 				switch(run_menu(&mainmen)) {
 					case MNU_FORWARD:
 						st = ST_INGAME;
@@ -302,6 +303,7 @@ int main(int argc, char* argv[])
 				break;
 			case ST_INGAME:
 				menu_ctx.active = 0;
+				game_context.active = 1;
 				switch(game(&grend, &input, &game_context, &menu_ctx)) {
 					case MNU_QUIT:
 						st = ST_QUITTING;
@@ -316,6 +318,7 @@ int main(int argc, char* argv[])
 				break;
 			case ST_OPTIONSMENU:
 				menu_ctx.active = 1;
+				game_context.active = 0;
 				switch(run_menu(&opt)) {
 					case MNU_QUIT:
 						st = ST_QUITTING;
