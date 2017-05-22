@@ -1,8 +1,7 @@
-Fix audio output (making other audio bad)
-Fix input 'sticking'
 Remap buttons
 Render text left-aligned
 Render text in all menus
 Mouse control in menus
 Touchscreen support
 Localization
+AI
