@@ -62,6 +62,8 @@ static void mainmenu_paint(void* userdata, struct renderer* r)
 static enum menu_result mainmenu_action(void* userdata, enum action action,
                                         int x, int y)
 {
+	(void)x;
+	(void)y;
 	struct mainmenu_state* m = userdata;
 
 	switch (action) {
