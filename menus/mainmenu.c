@@ -93,6 +93,7 @@ static enum menu_result mainmenu_action(void* userdata, enum action action,
 					play_menu_confirm();
 					return MNU_OPT1;
 			}
+			/* FALLTHROUGH */
 		default:
 			return MNU_NONE;
 	}
